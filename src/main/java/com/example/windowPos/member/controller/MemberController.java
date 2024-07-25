@@ -12,6 +12,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import static com.example.windowPos.global.filter.JwtAuthenticationFilter.extractAccessToken;
@@ -42,7 +43,7 @@ public class MemberController {
     }
 
     @PostMapping(value = "/login" , consumes = APPLICATION_JSON_VALUE)
-    public RsData<LoginResponse> login(@RequestBody MemberDto memberDto) throws Exception {
+    public ResponseEntity<RsData<LoginResponse>> login(@RequestBody MemberDto memberDto) throws Exception {
         boolean loginMember = memberService.memberCheck(memberDto.getUsername(), memberDto.getPassword());
 
         if (loginMember) {
@@ -55,14 +56,16 @@ public class MemberController {
             rq.setCrossDomainCookie("accessToken", accessToken);
             rq.setCrossDomainCookie("refreshToken", refreshToken);
 
-            return RsData.of("S-1", "토큰이 생성되었습니다.", null);
+            LoginResponse response = new LoginResponse(accessToken, refreshToken);
+
+            return ResponseEntity.ok(RsData.of("S-1", "로그인 성공", response));
         }  else {
-            return RsData.of("일치하지 않음", null);
+            return ResponseEntity.ok(RsData.of("일치하지 않음", null));
         }
     }
 
     @PostMapping(value = "/logout", consumes = APPLICATION_JSON_VALUE)
-    public RsData<LoginResponse> logout(HttpServletRequest req) {
+    public ResponseEntity<RsData<LoginResponse>> logout(HttpServletRequest req) {
         String refreshToken = extractRefreshToken(req);
         String accessToken = extractAccessToken(req);
 
@@ -72,7 +75,9 @@ public class MemberController {
         rq.removeCookie("accessToken");
         rq.removeCookie("refreshToken");
 
-        return RsData.of("S-1", "토큰이 삭제되었습니다.", null);
+        LoginResponse response = new LoginResponse(accessToken, refreshToken);
+
+        return ResponseEntity.ok(RsData.of("S-1", "로그아웃 성공", null));
     }
 
 
