@@ -8,7 +8,9 @@ import com.example.windowPos.member.dto.MemberDto;
 import com.example.windowPos.member.entity.Member;
 import com.example.windowPos.member.service.MemberService;
 import com.example.windowPos.redis.service.RedisServiceImpl;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -42,8 +44,9 @@ public class MemberController {
         }
     }
 
-    @PostMapping(value = "/login" , consumes = APPLICATION_JSON_VALUE)
-    public ResponseEntity<RsData<LoginResponse>> login(@RequestBody MemberDto memberDto) throws Exception {
+    //      로그인
+    @PostMapping(value = "/login", consumes = APPLICATION_JSON_VALUE)
+    public ResponseEntity<RsData<LoginResponse>> login(@RequestBody MemberDto memberDto, @RequestParam(required = false) boolean rememberMe, HttpServletResponse response) throws Exception {
         boolean loginMember = memberService.memberCheck(memberDto.getUsername(), memberDto.getPassword());
 
         if (loginMember) {
@@ -53,29 +56,42 @@ public class MemberController {
             memberService.saveRefreshToken(refreshToken, memberDto.getUsername());
             memberService.saveAccessToken(accessToken, memberDto.getUsername());
 
-            rq.setCrossDomainCookie("accessToken", accessToken);
-            rq.setCrossDomainCookie("refreshToken", refreshToken);
+            if (rememberMe) {
+                // 토큰 저장 (브라우저가 꺼지거나 컴퓨터가 종료되어도 삭제되지 않음. 유효기간이 유지됨.)
+                rq.setCrossDomainCookie("accessToken", accessToken, 60 * 30);
+                rq.setCrossDomainCookie("refreshToken", refreshToken, 60 * 60 * 24 * 365 * 10); // 10년
+                rq.setCrossDomainCookie("rememberMe", "true", 60 * 60 * 24 * 365 * 10);
+            } else {
+                // 세션 쿠기 설정 (세션 쿠키는 브라우저가 종료되거나 컴퓨터가 꺼지면 삭제됨.)
+                rq.setCrossDomainCookie("accessToken", accessToken, -1);
+                rq.setCrossDomainCookie("refreshToken", refreshToken, -1);
+                rq.setCrossDomainCookie("rememberMe", "false", -1);
+            }
 
-            LoginResponse response = new LoginResponse(accessToken, refreshToken);
+            LoginResponse loginResponse = new LoginResponse(accessToken, refreshToken);
 
-            return ResponseEntity.ok(RsData.of("S-1", "로그인 성공", response));
-        }  else {
+            return ResponseEntity.ok(RsData.of("S-1", "로그인 성공", loginResponse));
+        } else {
             return ResponseEntity.ok(RsData.of("일치하지 않음", null));
         }
     }
 
-    @PostMapping(value = "/logout", consumes = APPLICATION_JSON_VALUE)
+    //    자동 로그인
+
+
+    @PostMapping(value = "/logout")
     public ResponseEntity<RsData<LoginResponse>> logout(HttpServletRequest req) {
-        String refreshToken = extractRefreshToken(req);
-        String accessToken = extractAccessToken(req);
+        String refreshTokenKey = extractRefreshToken(req);
+        String accessTokenKey = extractAccessToken(req);
+
+        String refreshToken = "refreshToken :" + refreshTokenKey;
+        String accessToken = "accessToken :" + accessTokenKey;
 
         redisServiceImpl.deleteValue(accessToken);
         redisServiceImpl.deleteValue(refreshToken);
 
         rq.removeCookie("accessToken");
         rq.removeCookie("refreshToken");
-
-        LoginResponse response = new LoginResponse(accessToken, refreshToken);
 
         return ResponseEntity.ok(RsData.of("S-1", "로그아웃 성공", null));
     }
@@ -97,4 +113,5 @@ public class MemberController {
         Member loginUser = this.memberService.findById(userId).orElse(null);
         return RsData.of("S-1", "현재 로그인 유저", new loginUser(loginUser));
     }
+
 }

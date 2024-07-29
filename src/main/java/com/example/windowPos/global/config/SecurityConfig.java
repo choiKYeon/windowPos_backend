@@ -1,6 +1,10 @@
 package com.example.windowPos.global.config;
 
 import com.example.windowPos.global.filter.JwtAuthenticationFilter;
+import com.example.windowPos.redis.service.RedisService;
+import com.example.windowPos.redis.service.RedisServiceImpl;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -11,6 +15,8 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import static com.example.windowPos.global.filter.JwtAuthenticationFilter.extractAccessToken;
+import static com.example.windowPos.global.filter.JwtAuthenticationFilter.extractRefreshToken;
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
 @Configuration
@@ -19,6 +25,7 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final RedisService redisService;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -38,16 +45,10 @@ public class SecurityConfig {
                 .sessionManagement(sessionManagement ->
                         sessionManagement.sessionCreationPolicy(STATELESS)
                 ) // 세션끄기
-                .addFilterBefore(
+                .addFilterBefore( // jwy 필터 적용
                         jwtAuthenticationFilter, // 엑세스 토큰으로 부터 로그인 처리
                         UsernamePasswordAuthenticationFilter.class
                 )
-                .logout(logout ->
-                        logout
-                                .logoutUrl("/api/v1/member/logout")
-                                .logoutSuccessUrl("/")
-                                .invalidateHttpSession(true)
-                                .deleteCookies("accessToken","refreshToken"))
         ;
 
         return http.build();
