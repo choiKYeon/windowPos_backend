@@ -1,18 +1,16 @@
 package com.example.windowPos.orderManagement.entity;
 
 import com.example.windowPos.global.baseentity.BaseEntity;
+import com.example.windowPos.orderManagement.orderStatus.OrderStatus;
+import com.example.windowPos.orderManagement.orderType.OrderType;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -37,8 +35,22 @@ public class OrderManagement extends BaseEntity {
     //    주문 번호
     private String orderNumber;
 
-    //    주문 상태
-    private String orderStatus;
+    //    주문 상태관리
+    @Enumerated(EnumType.STRING)
+    private OrderStatus orderStatus;
+
+    //    포장인지 배달인지 주문 타입
+    @Enumerated(EnumType.STRING)
+    private OrderType orderType;
+
+    //    주문 거절 사유
+    private String rejectionReason;
+
+    //    예상 조리시간
+    private Integer estimatedCookingTime;
+
+    //    도착 예정 시간
+    private LocalDateTime estimatedArrivalTime;
 
     //    영업 중단
     @OneToOne(mappedBy = "orderManagement", cascade = CascadeType.ALL)
@@ -49,4 +61,40 @@ public class OrderManagement extends BaseEntity {
     @OneToMany(mappedBy = "orderManagement", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private List<Menu> menuList;
+
+    public void acceptOrder() {
+        if (this.orderStatus == OrderStatus.WAITING) {
+            this.orderStatus = OrderStatus.IN_PROGRESS;
+        } else {
+            throw new IllegalStateException("주문을 수락할 수 없는 상태입니다.");
+        }
+    }
+
+    public void rejectOrder() {
+        if (this.orderStatus == OrderStatus.WAITING) {
+            this.orderStatus = OrderStatus.REJECTED;
+        } else {
+            throw new IllegalStateException("주문을 거절할 수 없는 상태입니다.");
+        }
+    }
+
+    public void cancelOrder() {
+        if (this.orderStatus == OrderStatus.IN_PROGRESS) {
+            this.orderStatus = OrderStatus.REJECTED;
+        } else {
+            throw new IllegalStateException("주문을 취소할 수 없는 상태입니다.");
+        }
+    }
+
+    public void completeOrder() {
+        if (this.orderStatus == OrderStatus.IN_PROGRESS) {
+            this.orderStatus = OrderStatus.COMPLETED;
+        } else {
+            throw new IllegalStateException("주문을 완료할 수 없는 상태입니다.");
+        }
+    }
+
+//    주문표 인쇄도 만들어야함
+//    도착 남은 시간 업데이트 로직 짜야함
+
 }
