@@ -1,8 +1,8 @@
 package com.example.windowPos.orderManagement.entity;
 
 import com.example.windowPos.global.baseentity.BaseEntity;
-import com.example.windowPos.orderManagement.orderStatus.OrderStatus;
-import com.example.windowPos.orderManagement.orderType.OrderType;
+import com.example.windowPos.orderManagement.orderEnum.OrderStatus;
+import com.example.windowPos.orderManagement.orderEnum.OrderType;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
