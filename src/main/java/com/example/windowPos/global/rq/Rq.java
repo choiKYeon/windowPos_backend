@@ -28,19 +28,19 @@ public class Rq {
 
     // 쿠키 관련
     public void setCookie(String name, String value) {
-        System.out.println(resp);
         Cookie cookie = new Cookie(name, value);
         cookie.setPath("/");
         resp.addCookie(cookie);
     }
 
     //    refreshToken을 암호화 한 후에 저장
-    public void setCrossDomainCookie(String name, String value) throws Exception {
+    public void setCrossDomainCookie(String name, String value, int maxAge) throws Exception {
         ResponseCookie cookie = ResponseCookie.from(name, value)
                 .path("/")
                 .sameSite("None")
                 .secure(true)
                 .httpOnly(true)
+                .maxAge(maxAge)
                 .build();
 
         resp.addHeader("Set-Cookie", cookie.toString());

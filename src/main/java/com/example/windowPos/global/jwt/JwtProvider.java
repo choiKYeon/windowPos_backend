@@ -64,7 +64,6 @@ public class JwtProvider {
         return true;
     }
 
-//    이거 사용해보기
     public Map<String, Object> getClaims(String token) {
         String body = Jwts.parser()
                 .setSigningKey(getSecretKey())
