@@ -1,4 +1,4 @@
-package com.example.windowPos.orderManagement.orderStatus;
+package com.example.windowPos.orderManagement.orderEnum;
 
 public enum OrderStatus {
     WAITING,

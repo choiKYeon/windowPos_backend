@@ -1,8 +1,8 @@
 package com.example.windowPos.orderManagement.dto;
 
 import com.example.windowPos.orderManagement.entity.SalesPause;
-import com.example.windowPos.orderManagement.orderStatus.OrderStatus;
-import com.example.windowPos.orderManagement.orderType.OrderType;
+import com.example.windowPos.orderManagement.orderEnum.OrderStatus;
+import com.example.windowPos.orderManagement.orderEnum.OrderType;
 import lombok.*;
 
 import java.time.LocalDateTime;
