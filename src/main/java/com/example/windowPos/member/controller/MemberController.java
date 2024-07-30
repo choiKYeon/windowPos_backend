@@ -24,7 +24,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(value = "/api/v1/member", produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/api/v1/member")
 public class MemberController {
 
     private final MemberService memberService;
@@ -46,7 +46,7 @@ public class MemberController {
     }
 
     //      로그인
-    @PostMapping(value = "/login", consumes = APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/login", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<RsData<LoginResponse>> login(@RequestBody MemberDto memberDto, @RequestParam(name = "rememberMe", required = false) boolean rememberMe) throws Exception {
         boolean loginMember = memberService.memberCheck(memberDto.getUsername(), memberDto.getPassword());
 
@@ -120,6 +120,7 @@ public class MemberController {
         }
     }
 
+//    로그아웃
     @PostMapping(value = "/logout")
     public ResponseEntity<RsData<LoginResponse>> logout(HttpServletRequest req) {
         String refreshTokenKey = extractRefreshToken(req);
@@ -147,7 +148,7 @@ public class MemberController {
         private final Member member;
     }
 
-    @GetMapping(value = "/loginUser", consumes = APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/loginUser", produces = APPLICATION_JSON_VALUE)
     public RsData<?> loginUser(HttpServletRequest request) {
         String token = extractAccessToken(request); //헤더에 담긴 쿠키에서 토큰 요청
 
@@ -156,5 +157,4 @@ public class MemberController {
         Member loginUser = this.memberService.findById(userId).orElse(null);
         return RsData.of("S-1", "현재 로그인 유저", new loginUser(loginUser));
     }
-
 }
