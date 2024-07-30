@@ -44,9 +44,12 @@ public class OrderManagementDto {
     //    예상 조리시간
     private Integer estimatedCookingTime;
 
+    //    도착 예정 시간
+    private LocalDateTime estimatedArrivalTime;
+
     //    영업 중단
-    private SalesPause salesPause;
+    private SalesPauseDto salesPause;
 
     //    메뉴 리스트
-    private List<MenuDto> menuDtoList;
+    private List<MenuDto> menuList;
 }
