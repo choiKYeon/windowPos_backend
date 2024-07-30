@@ -86,10 +86,26 @@ public class WebSoketMessageHandler extends TextWebSocketHandler {
         if (request == null) return;
 
         // 주문id로 주문을 조회
-        OrderManagement order = orderManagementRepository.findById(request.getOrderId())
-                .orElseThrow(() -> new RuntimeException("Order not found"));
-//        주문 상태를 업데이트
-        order.setOrderStatus(request.getOrderStatus());
+        OrderManagement order = orderManagementRepository.findById(request.getId())
+                .orElseThrow(() -> new RuntimeException("주문 못 찾음"));
+
+        switch (request.getOrderStatus()) {
+            case IN_PROGRESS:
+                order.acceptOrder();
+                break;
+            case COMPLETED:
+                order.completeOrder();
+                break;
+            case REJECTED:
+                order.rejectOrder();
+                break;
+            case CANCELLED:
+                order.cancelOrder();
+                break;
+            default:
+                throw new IllegalArgumentException("상태 업로드 실패");
+        }
+
         orderManagementRepository.save(order);
 
         // 업데이트된 주문 상태를 모든 연결된 클라이언트에게 브로드캐스트
