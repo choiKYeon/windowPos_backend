@@ -16,6 +16,9 @@ public class SalesPauseDto {
     //    영업 상태
     private String salesStatus;
 
-    //    영업 일시 정지 시간
-    private LocalDateTime salesPauseTime;
+    // 영업 일시 정지 시작 시간
+    private LocalDateTime salesPauseStartTime;
+
+    // 영업 일시 정지 종료 시간
+    private LocalDateTime salesPauseEndTime;
 }
