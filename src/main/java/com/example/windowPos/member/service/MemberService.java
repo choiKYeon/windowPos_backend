@@ -43,21 +43,21 @@ public class MemberService {
     }
 
     //    로그인 시 해당 유저의 refreshToken을 저장하는 구문
-    public void saveRefreshToken (String refreshTokenKey, String username){
+    public void saveRefreshToken (String username, String refreshTokenKey){
 
-        String refreshToken = "refreshToken :" + refreshTokenKey;
+        String refreshToken = refreshTokenKey;
 
         Duration refreshTokenDuration = Duration.ofDays(7);
-        redisService.setValues(refreshToken, username, refreshTokenDuration);
+        redisService.setValues("refreshToken", refreshToken , refreshTokenDuration);
     }
 
 //    로그인 시 해당 유저의 accessToken을 저장하는 구문
-    public void saveAccessToken (String accessTokenKey, String username){
+    public void saveAccessToken (String username, String accessTokenKey){
 
-        String accessToken = "accessToken :" + accessTokenKey;
+        String accessToken = accessTokenKey;
 
         Duration accessTokenDuration = Duration.ofMinutes(30);
-        redisService.setValues(accessToken, username, accessTokenDuration);
+        redisService.setValues("accessToken", accessToken, accessTokenDuration);
     }
 
 //    Id로 유저 조회

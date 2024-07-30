@@ -70,12 +70,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             if ((!jwtProvider.verify(accessToken) && !jwtProvider.verify(refreshToken)) || !jwtProvider.verify(refreshToken)) {
                 rq.removeCookie("accessToken");
                 rq.removeCookie("refreshToken");
-                redisServiceImpl.deleteValue("refreshToken :" + refreshToken);
+                redisServiceImpl.deleteValue("refreshToken");
             } else if (refreshToken != null && jwtProvider.verify(refreshToken)) {
 
 //            새로운 accessToken 생성
                 String accessUsername = jwtProvider.getUsername(refreshToken);
                 String newAccessToken = jwtUtil.genAccessToken(accessUsername);
+
                 // 자동 로그인 여부에 따라 쿠키 설정
                 if (rememberMe != null && rememberMe.equals("true")) {
                     rq.setCrossDomainCookie("accessToken", newAccessToken, 60 * 30);
@@ -87,21 +88,21 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 SecurityUser securityUser = jwtUtil.getUserFromAccessToken(newAccessToken);
                 rq.setLogin(securityUser);
 
-//                refreshToken 토큰이 유효할 경우에
+//             refreshToken 토큰이 유효할 경우에
                 String username = jwtProvider.getUsername(refreshToken);
 
-//                    새로운 refreshToken 생성
+//             새로운 refreshToken 생성
                 String newRefreshToken = jwtUtil.genRefreshToken(username);
 
-//                    기존 refreshToken, accessToken 삭제
-                redisServiceImpl.deleteValue("accessToken :" + accessToken);
-                redisServiceImpl.deleteValue("refreshToken :" + refreshToken);
+//             기존 refreshToken, accessToken 삭제
+                redisServiceImpl.deleteValue("accessToken");
+                redisServiceImpl.deleteValue("refreshToken");
 
 //                    redis에 새로운 access, refresh 토큰들 저장
-                memberService.saveRefreshToken(newRefreshToken, username);
-                memberService.saveAccessToken(newAccessToken, username);
+                memberService.saveRefreshToken("refreshToken", newRefreshToken);
+                memberService.saveAccessToken("accessToken", newAccessToken);
 
-                // 새 토큰 쿠키에 저장
+                //          새 토큰 쿠키에 저장 (자동 로그인일 때)
                 if (rememberMe != null && rememberMe.equals("true")) {
                     rq.setCrossDomainCookie("refreshToken", newRefreshToken, 60 * 60 * 24 * 365 * 10); // 7일
                 } else {
@@ -154,6 +155,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (cookies != null) {
             for (Cookie cookie : cookies) {
                 if (cookie.getName().equals("refreshToken")) {
+                    return cookie.getValue();
+                }
+            }
+        }
+        return null;
+    }
+
+    public static String extractCookieValue(HttpServletRequest request) {
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if (cookie.getName().equals("rememberMe")) {
                     return cookie.getValue();
                 }
             }

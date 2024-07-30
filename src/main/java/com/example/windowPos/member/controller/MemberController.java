@@ -17,8 +17,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import static com.example.windowPos.global.filter.JwtAuthenticationFilter.extractAccessToken;
-import static com.example.windowPos.global.filter.JwtAuthenticationFilter.extractRefreshToken;
+import java.util.Optional;
+
+import static com.example.windowPos.global.filter.JwtAuthenticationFilter.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @RestController
@@ -46,15 +47,21 @@ public class MemberController {
 
     //      로그인
     @PostMapping(value = "/login", consumes = APPLICATION_JSON_VALUE)
-    public ResponseEntity<RsData<LoginResponse>> login(@RequestBody MemberDto memberDto, @RequestParam(required = false) boolean rememberMe, HttpServletResponse response) throws Exception {
+    public ResponseEntity<RsData<LoginResponse>> login(@RequestBody MemberDto memberDto, @RequestParam(name = "rememberMe", required = false) boolean rememberMe) throws Exception {
         boolean loginMember = memberService.memberCheck(memberDto.getUsername(), memberDto.getPassword());
 
         if (loginMember) {
+            String oldAccessTokenKey = "accessToken :" + memberDto.getUsername();
+            String oldRefreshTokenKey = "refreshToken :" + memberDto.getUsername();
+            redisServiceImpl.deleteValue(oldAccessTokenKey);
+            redisServiceImpl.deleteValue(oldRefreshTokenKey);
+
             String accessToken = jwtUtill.genAccessToken(memberDto.getUsername());
             String refreshToken = jwtUtill.genRefreshToken(memberDto.getUsername());
 
-            memberService.saveRefreshToken(refreshToken, memberDto.getUsername());
-            memberService.saveAccessToken(accessToken, memberDto.getUsername());
+//            redis에 저장하는 구문
+            memberService.saveRefreshToken(memberDto.getUsername(), refreshToken);
+            memberService.saveAccessToken(memberDto.getUsername(), accessToken);
 
             if (rememberMe) {
                 // 토큰 저장 (브라우저가 꺼지거나 컴퓨터가 종료되어도 삭제되지 않음. 유효기간이 유지됨.)
@@ -62,7 +69,7 @@ public class MemberController {
                 rq.setCrossDomainCookie("refreshToken", refreshToken, 60 * 60 * 24 * 365 * 10); // 10년
                 rq.setCrossDomainCookie("rememberMe", "true", 60 * 60 * 24 * 365 * 10);
             } else {
-                // 세션 쿠기 설정 (세션 쿠키는 브라우저가 종료되거나 컴퓨터가 꺼지면 삭제됨.)
+                // 세션 쿠키 설정 (세션 쿠키는 브라우저가 종료되거나 컴퓨터가 꺼지면 삭제됨.)
                 rq.setCrossDomainCookie("accessToken", accessToken, -1);
                 rq.setCrossDomainCookie("refreshToken", refreshToken, -1);
                 rq.setCrossDomainCookie("rememberMe", "false", -1);
@@ -77,25 +84,61 @@ public class MemberController {
     }
 
     //    자동 로그인
+    @GetMapping("/auto-login")
+    public ResponseEntity<RsData<?>> autoLogin(HttpServletRequest request) throws Exception {
+        String checkRememberMe = extractCookieValue(request);
 
+        if ("false".equals(checkRememberMe)) {
+//        rememberMe 비활성화 상태일때 자동 로그인 불가
+
+            return ResponseEntity.status(401).body(RsData.of("E-1", "자동 로그인 실패", "자동 로그인이 설정되지 않았습니다."));
+        }
+
+        String accessToken = extractAccessToken(request);
+        String refreshToken = extractRefreshToken(request);
+
+        if (accessToken != null && jwtProvider.verify(accessToken)) {
+//        accessToken이 존재하고 검증 되었을때
+
+            return ResponseEntity.ok(RsData.of("S-1", "자동 로그인 성공", "자동 로그인되었습니다."));
+        } else if (refreshToken != null && jwtProvider.verify(refreshToken)) {
+//            refreshToken이 존재하고 검증 되었으며, accessToken이 만료되었을때
+
+            String username = jwtProvider.getUsername(refreshToken);
+            String newAccessToken = jwtUtill.genAccessToken(username);
+            String newRefreshToken = jwtUtill.genRefreshToken(username);
+
+            memberService.saveAccessToken("accessToken", newAccessToken);
+            memberService.saveRefreshToken("refreshToken", newRefreshToken);
+
+            rq.setCrossDomainCookie("accessToken", newAccessToken, 60 * 30);
+            rq.setCrossDomainCookie("refreshToken", newRefreshToken, 60 * 60 * 24 * 365 * 10); // 10년
+
+            return ResponseEntity.ok(RsData.of("S-1", "자동 로그인 성공", "새로운 액세스 토큰이 발급되었습니다."));
+        } else {
+            return ResponseEntity.status(401).body(RsData.of("E-1", "자동 로그인 실패", "로그인이 필요합니다."));
+        }
+    }
 
     @PostMapping(value = "/logout")
     public ResponseEntity<RsData<LoginResponse>> logout(HttpServletRequest req) {
         String refreshTokenKey = extractRefreshToken(req);
         String accessTokenKey = extractAccessToken(req);
 
-        String refreshToken = "refreshToken :" + refreshTokenKey;
-        String accessToken = "accessToken :" + accessTokenKey;
-
-        redisServiceImpl.deleteValue(accessToken);
-        redisServiceImpl.deleteValue(refreshToken);
+        // Redis에서 토큰 삭제
+        if (accessTokenKey != null) {
+            redisServiceImpl.deleteValue("accessToken");
+        }
+        if (refreshTokenKey != null) {
+            redisServiceImpl.deleteValue("refreshToken");
+        }
 
         rq.removeCookie("accessToken");
         rq.removeCookie("refreshToken");
+        rq.removeCookie("rememberMe");
 
         return ResponseEntity.ok(RsData.of("S-1", "로그아웃 성공", null));
     }
-
 
     //    현재 로그인한 유저
     @AllArgsConstructor
