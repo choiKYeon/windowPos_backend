@@ -62,36 +62,9 @@ public class OrderManagement extends BaseEntity {
     @JsonManagedReference
     private List<Menu> menuList;
 
-    public void acceptOrder() {
-        if (this.orderStatus == OrderStatus.WAITING) {
-            this.orderStatus = OrderStatus.IN_PROGRESS;
-        } else {
-            throw new IllegalStateException("주문을 수락할 수 없는 상태입니다.");
-        }
-    }
-
-    public void rejectOrder() {
-        if (this.orderStatus == OrderStatus.WAITING) {
-            this.orderStatus = OrderStatus.REJECTED;
-        } else {
-            throw new IllegalStateException("주문을 거절할 수 없는 상태입니다.");
-        }
-    }
-
-    public void cancelOrder() {
-        if (this.orderStatus == OrderStatus.IN_PROGRESS) {
-            this.orderStatus = OrderStatus.REJECTED;
-        } else {
-            throw new IllegalStateException("주문을 취소할 수 없는 상태입니다.");
-        }
-    }
-
-    public void completeOrder() {
-        if (this.orderStatus == OrderStatus.IN_PROGRESS) {
-            this.orderStatus = OrderStatus.COMPLETED;
-        } else {
-            throw new IllegalStateException("주문을 완료할 수 없는 상태입니다.");
-        }
+//    주문 상태 관리
+    public void updateStatus(OrderStatus newStatus) {
+        this.orderStatus = newStatus;
     }
 
 //    주문표 인쇄도 만들어야함
