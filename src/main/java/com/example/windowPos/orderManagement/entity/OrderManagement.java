@@ -3,6 +3,7 @@ package com.example.windowPos.orderManagement.entity;
 import com.example.windowPos.global.baseentity.BaseEntity;
 import com.example.windowPos.orderManagement.orderEnum.OrderStatus;
 import com.example.windowPos.orderManagement.orderEnum.OrderType;
+import com.example.windowPos.setting.entity.SalesPause;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
@@ -20,6 +21,13 @@ import java.util.List;
 @SuperBuilder
 @Entity
 public class OrderManagement extends BaseEntity {
+
+    //    영업중인지 영업 안하는지 확인 (임시정지 시간도 설정할 수 있어야함.)
+    private Boolean operate = true;
+
+    public void setOperate(Boolean operate) {
+        this.operate = operate;
+    }
 
     //    주문 시간
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
@@ -49,7 +57,7 @@ public class OrderManagement extends BaseEntity {
     //    예상 조리시간
     private Integer estimatedCookingTime;
 
-    //    도착 예정 시간
+    //    도착 예상 시간
     private Integer estimatedArrivalTime;
 
     //    영업 중단

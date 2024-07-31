@@ -38,6 +38,15 @@ public class OrderManagementService {
 //    주문 생성하는 구문
     @Transactional
     public OrderManagement createOrder(OrderManagementDto orderManagementDto) {
+
+        // 영업 중인지 확인
+        OrderManagement currentOrderManagement = orderManagementRepository.findById(orderManagementDto.getId())
+                .orElseThrow(() -> new RuntimeException("주문 관리 객체를 찾을 수 없습니다."));
+
+        if (!currentOrderManagement.getOperate()) {
+            throw new IllegalStateException("현재 영업 중이 아닙니다. 주문을 생성할 수 없습니다.");
+        }
+
         Long orderNumber = getNextOrderNumber();
 
         List<Menu> menus = orderManagementDto.getMenuList().stream()
@@ -66,6 +75,14 @@ public class OrderManagementService {
     @Transactional
     public void updateOrderStatus(OrderUpdateRequest request) {
         if (request == null) return;
+
+        // 영업 중인지 확인
+        OrderManagement currentOrderManagement = orderManagementRepository.findById(request.getId())
+                .orElseThrow(() -> new RuntimeException("주문 관리 객체를 찾을 수 없습니다."));
+
+        if (!currentOrderManagement.getOperate()) {
+            throw new IllegalStateException("현재 영업 중이 아닙니다. 주문을 생성할 수 없습니다.");
+        }
 
         // 주문id로 주문을 조회
         OrderManagement order = orderManagementRepository.findById(request.getId())
