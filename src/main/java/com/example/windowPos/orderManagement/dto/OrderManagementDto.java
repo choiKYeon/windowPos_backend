@@ -1,8 +1,5 @@
 package com.example.windowPos.orderManagement.dto;
 
-import com.example.windowPos.orderManagement.entity.SalesPause;
-import com.example.windowPos.orderManagement.orderEnum.OrderStatus;
-import com.example.windowPos.orderManagement.orderEnum.OrderType;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 
@@ -35,10 +32,10 @@ public class OrderManagementDto {
     private Long orderNumber;
 
     //    주문 상태관리
-    private OrderStatus orderStatus;
+    private String orderStatus;
 
     //    포장인지 배달인지 주문 타입
-    private OrderType orderType;
+    private String orderType;
 
     //    주문 거절 사유
     private String rejectionReason;

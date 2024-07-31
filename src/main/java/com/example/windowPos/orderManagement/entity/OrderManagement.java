@@ -46,9 +46,6 @@ public class OrderManagement extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private OrderType orderType;
 
-    //    주문 거절 사유
-    private String rejectionReason;
-
     //    예상 조리시간
     private Integer estimatedCookingTime;
 
@@ -87,7 +84,7 @@ public class OrderManagement extends BaseEntity {
 
     public void cancelOrder() {
         if (this.orderStatus == OrderStatus.IN_PROGRESS) {
-            this.orderStatus = OrderStatus.REJECTED;
+            this.orderStatus = OrderStatus.CANCELLED;
         } else {
             throw new IllegalStateException("주문을 취소할 수 없는 상태입니다.");
         }

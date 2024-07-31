@@ -6,6 +6,7 @@ import com.example.windowPos.orderManagement.dto.OrderUpdateRequest;
 import com.example.windowPos.orderManagement.entity.Menu;
 import com.example.windowPos.orderManagement.entity.OrderManagement;
 import com.example.windowPos.orderManagement.orderEnum.OrderStatus;
+import com.example.windowPos.orderManagement.orderEnum.OrderType;
 import com.example.windowPos.orderManagement.repository.OrderManagementRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -50,7 +51,8 @@ public class OrderManagementService {
                 .totalPrice(orderManagementDto.getTotalPrice())
                 .orderNumber(orderNumber)
                 .orderStatus(OrderStatus.WAITING)
-                .orderType(orderManagementDto.getOrderType())
+//                String -> Enum타입 변환
+                .orderType(orderManagementDto.getOrderType() != null ? OrderType.valueOf(orderManagementDto.getOrderType()) : null)
                 .menuList(menus)
                 .build();
 
@@ -69,23 +71,27 @@ public class OrderManagementService {
         OrderManagement order = orderManagementRepository.findById(request.getId())
                 .orElseThrow(() -> new RuntimeException("주문 못 찾음"));
 
-        switch (request.getOrderStatus()) {
+        OrderStatus newStatus = OrderStatus.valueOf(request.getOrderStatus());
+
+        switch (newStatus) {
             case IN_PROGRESS:
                 order.acceptOrder();
                 break;
             case COMPLETED:
+                // 주문이 진행 중일 때만 완료가 가능
                 order.completeOrder();
                 break;
             case REJECTED:
+                // 주문이 대기 중일 때만 거절이 가능
                 order.rejectOrder();
                 break;
             case CANCELLED:
+                // 주문이 진행 중일 때만 취소가 가능
                 order.cancelOrder();
                 break;
             default:
                 throw new IllegalArgumentException("상태 업로드 실패");
         }
-
         orderManagementRepository.save(order);
     }
 }
