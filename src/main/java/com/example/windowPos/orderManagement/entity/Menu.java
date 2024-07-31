@@ -28,4 +28,8 @@ public class Menu extends BaseEntity {
     @JoinColumn(name = "order_management_id")
     @JsonBackReference
     private OrderManagement orderManagement;
+
+    public void setOrderManagement(OrderManagement orderManagement) {
+        this.orderManagement = orderManagement;
+    }
 }

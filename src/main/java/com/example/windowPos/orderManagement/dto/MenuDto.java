@@ -16,4 +16,5 @@ public class MenuDto {
 
     //    메뉴 가격
     private Long price;
+
 }

@@ -30,7 +30,7 @@ public class OrderManagementDto {
     private Long totalPrice;
 
     //    주문 번호
-    private String orderNumber;
+    private Long orderNumber;
 
     //    주문 상태관리
     private OrderStatus orderStatus;
