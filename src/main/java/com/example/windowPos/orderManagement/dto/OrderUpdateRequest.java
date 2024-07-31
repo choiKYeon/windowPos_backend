@@ -19,7 +19,7 @@ public class OrderUpdateRequest {
 //    조리 예상 시간
     private Integer estimatedCookingTime;
 //    주문 도착 시간
-    private LocalDateTime estimatedArrivalTime;
+    private Integer estimatedArrivalTime;
 
 //    여기 더 수정해야함
 }

@@ -1,13 +1,10 @@
 package com.example.windowPos.global.websocketHandler;
 
-import com.example.windowPos.member.repository.MemberRepository;
 import com.example.windowPos.orderManagement.dto.*;
-import com.example.windowPos.orderManagement.entity.Menu;
-import com.example.windowPos.orderManagement.entity.OrderManagement;
-import com.example.windowPos.orderManagement.entity.SalesPause;
 import com.example.windowPos.orderManagement.repository.OrderManagementRepository;
 import com.example.windowPos.orderManagement.service.OrderManagementService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
@@ -18,7 +15,6 @@ import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.HashMap;
-import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
@@ -26,8 +22,6 @@ import java.util.stream.Collectors;
 public class WebSoketMessageHandler extends TextWebSocketHandler {
     //    사용자 id와 웹소켓 세션을 매핑하는 hashmap, 사용자와 연결된 세션 추적
     HashMap<String, WebSocketSession> sessionMap = new HashMap<>();
-    private final OrderManagementRepository orderManagementRepository;
-    private final OrderManagementService orderManagementService;
 
     @Override
 //    연결이 성립되었을 때 호출하는 메서드
@@ -56,14 +50,13 @@ public class WebSoketMessageHandler extends TextWebSocketHandler {
     }
 
     // 주문 상태를 브로드캐스트하는 메서드
-    public void broadcastOrderUpdate(Long id) {
-        OrderManagement order = orderManagementRepository.findById(id).orElse(null);
-        OrderManagementDto orderManagementDTO = DtoConverter.convertToDto(order);
-        String orderUpdateMessage = convertToJson(orderManagementDTO);
-
+    public void broadcastOrderUpdate(OrderManagementDto orderManagementDto) {
+        String orderUpdateMessage = convertToJson(orderManagementDto);
+        System.out.println("잘 될거야 :" + orderUpdateMessage);
         for (WebSocketSession session : sessionMap.values()) {
             try {
 //                세션을 통해 메세지 전송
+                System.out.println("진짜 잘 보내질거야 :" + session.getId());
                 session.sendMessage(new TextMessage(orderUpdateMessage));
             } catch (Exception e) {
                 e.printStackTrace();
@@ -76,6 +69,7 @@ public class WebSoketMessageHandler extends TextWebSocketHandler {
         // 실제 구현에서는 Jackson 또는 Gson 등을 사용하여 JSON 변환
         try {
             ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.registerModule(new JavaTimeModule());
             return objectMapper.writeValueAsString(orderManagementDTO);
         } catch (Exception e) {
             e.printStackTrace();

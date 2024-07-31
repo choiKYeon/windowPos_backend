@@ -28,7 +28,7 @@ public class OrderManagementController {
         OrderManagement orderManagement = orderManagementService.createOrder(orderManagementDto);
         OrderManagementDto orderManagementDto1 = DtoConverter.convertToDto(orderManagement);
 //        웹소켓 브로드캐스트
-        webSoketMessageHandler.broadcastOrderUpdate(orderManagement.getId());
+        webSoketMessageHandler.broadcastOrderUpdate(orderManagementDto1);
         return ResponseEntity.ok(RsData.of("S-1", "주문 생성 성공", orderManagementDto1));
     }
 
@@ -39,7 +39,7 @@ public class OrderManagementController {
         orderManagementService.updateOrderStatus(orderUpdateRequest);
         OrderManagement orderManagement = orderManagementRepository.findById(id).orElse(null);
         OrderManagementDto orderManagementDto = DtoConverter.convertToDto(orderManagement);
-        webSoketMessageHandler.broadcastOrderUpdate(orderManagement.getId());
+        webSoketMessageHandler.broadcastOrderUpdate(orderManagementDto);
         return ResponseEntity.ok(RsData.of("S-1", "주문 상태 수정 성공", orderManagementDto));
     }
 }

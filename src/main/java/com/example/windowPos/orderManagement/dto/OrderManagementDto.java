@@ -3,6 +3,7 @@ package com.example.windowPos.orderManagement.dto;
 import com.example.windowPos.orderManagement.entity.SalesPause;
 import com.example.windowPos.orderManagement.orderEnum.OrderStatus;
 import com.example.windowPos.orderManagement.orderEnum.OrderType;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -18,6 +19,7 @@ public class OrderManagementDto {
     private Long id;
 
     //    주문 시간
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime orderTime;
 
     //    요청사항
@@ -45,7 +47,7 @@ public class OrderManagementDto {
     private Integer estimatedCookingTime;
 
     //    도착 예정 시간
-    private LocalDateTime estimatedArrivalTime;
+    private Integer estimatedArrivalTime;
 
     //    영업 중단
     private SalesPauseDto salesPause;
