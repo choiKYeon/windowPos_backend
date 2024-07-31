@@ -2,9 +2,9 @@ package com.example.windowPos.setting.entity;
 
 import com.example.windowPos.global.baseentity.BaseEntity;
 import com.example.windowPos.orderManagement.entity.OrderManagement;
-import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
+import com.example.windowPos.setting.settingEnum.SalesStatus;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,12 +20,15 @@ import java.time.LocalDateTime;
 public class SalesPause extends BaseEntity {
 
     //    영업 상태
-    private String salesStatus;
+    @Enumerated(EnumType.STRING)
+    private SalesStatus salesStatus;
 
     // 영업 일시 정지 시작 시간
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime salesPauseStartTime;
 
     // 영업 일시 정지 종료 시간
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime salesPauseEndTime;
 
     @OneToOne

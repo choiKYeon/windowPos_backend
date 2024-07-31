@@ -22,13 +22,6 @@ import java.util.List;
 @Entity
 public class OrderManagement extends BaseEntity {
 
-    //    영업중인지 영업 안하는지 확인 (임시정지 시간도 설정할 수 있어야함.)
-    private Boolean operate = true;
-
-    public void setOperate(Boolean operate) {
-        this.operate = operate;
-    }
-
     //    주문 시간
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime orderTime;
