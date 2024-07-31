@@ -33,11 +33,12 @@ public class OrderManagement extends BaseEntity {
     private Long totalPrice;
 
     //    주문 번호
-    private String orderNumber;
+    @Column(unique = true)
+    private Long orderNumber;
 
     //    주문 상태관리
     @Enumerated(EnumType.STRING)
-    private OrderStatus orderStatus = OrderStatus.WAITING;
+    private OrderStatus orderStatus;
 
     //    포장인지 배달인지 주문 타입
     @Enumerated(EnumType.STRING)
@@ -61,6 +62,10 @@ public class OrderManagement extends BaseEntity {
     @OneToMany(mappedBy = "orderManagement", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private List<Menu> menuList;
+
+    public void setMenuList(List<Menu> menuList) {
+        this.menuList = menuList;
+    }
 
     public void acceptOrder() {
         if (this.orderStatus == OrderStatus.WAITING) {

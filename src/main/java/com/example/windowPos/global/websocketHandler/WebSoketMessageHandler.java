@@ -1,18 +1,15 @@
 package com.example.windowPos.global.websocketHandler;
 
 import com.example.windowPos.member.repository.MemberRepository;
-import com.example.windowPos.orderManagement.dto.MenuDto;
-import com.example.windowPos.orderManagement.dto.OrderManagementDto;
-import com.example.windowPos.orderManagement.dto.OrderUpdateRequest;
-import com.example.windowPos.orderManagement.dto.SalesPauseDto;
+import com.example.windowPos.orderManagement.dto.*;
 import com.example.windowPos.orderManagement.entity.Menu;
 import com.example.windowPos.orderManagement.entity.OrderManagement;
 import com.example.windowPos.orderManagement.entity.SalesPause;
 import com.example.windowPos.orderManagement.repository.OrderManagementRepository;
+import com.example.windowPos.orderManagement.service.OrderManagementService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
@@ -27,10 +24,10 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 //    웹소켓 메세지를 처리하는 클래스
 public class WebSoketMessageHandler extends TextWebSocketHandler {
-//    사용자 id와 웹소켓 세션을 매핑하는 hashmap, 사용자와 연결된 세션 추적
+    //    사용자 id와 웹소켓 세션을 매핑하는 hashmap, 사용자와 연결된 세션 추적
     HashMap<String, WebSocketSession> sessionMap = new HashMap<>();
     private final OrderManagementRepository orderManagementRepository;
-    private final MemberRepository memberRepository;
+    private final OrderManagementService orderManagementService;
 
     @Override
 //    연결이 성립되었을 때 호출하는 메서드
@@ -38,18 +35,7 @@ public class WebSoketMessageHandler extends TextWebSocketHandler {
 //        웹소켓 세션으로부터 사용자 id를 찾아냄
         String userId = searchUserName(session);
 //        세션맵에 사용자 id와 웹소켓 세션 추가
-        sessionMap.put(userId,session);
-    }
-
-    @Override
-//    클라이언트에서 메세지를 수신했을 때 호출되는 메서드
-    protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
-        // 수신된 메세지를 가져옴
-        String payload = message.getPayload();
-//        메세지를 orderUpdateRequest 객체로 변환
-        OrderUpdateRequest orderUpdateRequest = parseMessage(payload);
-//        주문 상태 업데이트
-        updateOrderStatus(orderUpdateRequest);
+        sessionMap.put(userId, session);
     }
 
     @Override
@@ -69,52 +55,10 @@ public class WebSoketMessageHandler extends TextWebSocketHandler {
         return uriComponents.getQueryParams().getFirst("uid");
     }
 
-    // JSON형식의 문자열을 orderUpdateRequest 객체로 변환
-    private OrderUpdateRequest parseMessage(String payload) {
-        try {
-            ObjectMapper objectMapper = new ObjectMapper();
-//            JSON문자열을 orderUpdateRequest 객체로 읽음
-            return objectMapper.readValue(payload, OrderUpdateRequest.class);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-    // 객체를 사용하여 주문 상태를 업데이트 하는 메서드
-    private void updateOrderStatus(OrderUpdateRequest request) {
-        if (request == null) return;
-
-        // 주문id로 주문을 조회
-        OrderManagement order = orderManagementRepository.findById(request.getId())
-                .orElseThrow(() -> new RuntimeException("주문 못 찾음"));
-
-        switch (request.getOrderStatus()) {
-            case IN_PROGRESS:
-                order.acceptOrder();
-                break;
-            case COMPLETED:
-                order.completeOrder();
-                break;
-            case REJECTED:
-                order.rejectOrder();
-                break;
-            case CANCELLED:
-                order.cancelOrder();
-                break;
-            default:
-                throw new IllegalArgumentException("상태 업로드 실패");
-        }
-
-        orderManagementRepository.save(order);
-
-        // 업데이트된 주문 상태를 모든 연결된 클라이언트에게 브로드캐스트
-        broadcastOrderUpdate(order);
-    }
-
     // 주문 상태를 브로드캐스트하는 메서드
-    private void broadcastOrderUpdate(OrderManagement order) {
-        OrderManagementDto orderManagementDTO = convertToDTO(order);
+    public void broadcastOrderUpdate(Long id) {
+        OrderManagement order = orderManagementRepository.findById(id).orElse(null);
+        OrderManagementDto orderManagementDTO = DtoConverter.convertToDto(order);
         String orderUpdateMessage = convertToJson(orderManagementDTO);
 
         for (WebSocketSession session : sessionMap.values()) {
@@ -125,43 +69,6 @@ public class WebSoketMessageHandler extends TextWebSocketHandler {
                 e.printStackTrace();
             }
         }
-    }
-
-    // OrderManagement 객체를 DTO로 변환하는 메서드
-    private OrderManagementDto convertToDTO(OrderManagement order) {
-        OrderManagementDto orderManagementDTO = new OrderManagementDto();
-        orderManagementDTO.setId(order.getId());
-        orderManagementDTO.setOrderTime(order.getOrderTime());
-        orderManagementDTO.setRequest(order.getRequest());
-        orderManagementDTO.setAddress(order.getAddress());
-        orderManagementDTO.setTotalPrice(order.getTotalPrice());
-        orderManagementDTO.setOrderNumber(order.getOrderNumber());
-        orderManagementDTO.setOrderStatus(order.getOrderStatus());
-        orderManagementDTO.setOrderType(order.getOrderType());
-        orderManagementDTO.setRejectionReason(order.getRejectionReason());
-        orderManagementDTO.setEstimatedCookingTime(order.getEstimatedCookingTime());
-        orderManagementDTO.setEstimatedArrivalTime(order.getEstimatedArrivalTime());
-        orderManagementDTO.setMenuList(order.getMenuList().stream().map(this::menuDTO).collect(Collectors.toList()));
-        orderManagementDTO.setSalesPause(convertToDTO(order.getSalesPause()));
-        return orderManagementDTO;
-    }
-
-    // Menu 객체를 DTO로 변환하는 메서드
-    private MenuDto menuDTO(Menu menu) {
-        MenuDto menuDTO = new MenuDto();
-        menuDTO.setId(menu.getId());
-        menuDTO.setMenuName(menu.getMenuName());
-        menuDTO.setPrice(menu.getPrice());
-        return menuDTO;
-    }
-
-    // SalesPause 객체를 DTO로 변환하는 메서드
-    private SalesPauseDto convertToDTO(SalesPause salesPause) {
-        SalesPauseDto salesPauseDTO = new SalesPauseDto();
-        salesPauseDTO.setId(salesPause.getId());
-        salesPauseDTO.setSalesPauseStartTime(salesPause.getSalesPauseStartTime());
-        salesPauseDTO.setSalesPauseEndTime(salesPause.getSalesPauseEndTime());
-        return salesPauseDTO;
     }
 
     // DTO 객체를 JSON 문자열로 변환하는 메서드
