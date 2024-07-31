@@ -1,9 +1,9 @@
-package com.example.windowPos.orderManagement.entity;
+package com.example.windowPos.setting.entity;
 
 import com.example.windowPos.global.baseentity.BaseEntity;
+import com.example.windowPos.orderManagement.entity.OrderManagement;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

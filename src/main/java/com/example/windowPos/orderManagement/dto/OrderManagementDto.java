@@ -1,5 +1,6 @@
 package com.example.windowPos.orderManagement.dto;
 
+import com.example.windowPos.setting.dto.SalesPauseDto;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 
@@ -43,7 +44,7 @@ public class OrderManagementDto {
     //    예상 조리시간
     private Integer estimatedCookingTime;
 
-    //    도착 예정 시간
+    //    도착 예상 시간
     private Integer estimatedArrivalTime;
 
     //    영업 중단

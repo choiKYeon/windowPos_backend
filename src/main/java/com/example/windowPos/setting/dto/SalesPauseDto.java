@@ -1,4 +1,4 @@
-package com.example.windowPos.orderManagement.dto;
+package com.example.windowPos.setting.dto;
 
 import lombok.*;
 

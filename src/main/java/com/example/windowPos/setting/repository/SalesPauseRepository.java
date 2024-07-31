@@ -1,6 +1,6 @@
-package com.example.windowPos.orderManagement.repository;
+package com.example.windowPos.setting.repository;
 
-import com.example.windowPos.orderManagement.entity.SalesPause;
+import com.example.windowPos.setting.entity.SalesPause;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

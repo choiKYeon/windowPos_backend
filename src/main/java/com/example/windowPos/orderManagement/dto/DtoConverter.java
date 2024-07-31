@@ -2,7 +2,8 @@ package com.example.windowPos.orderManagement.dto;
 
 import com.example.windowPos.orderManagement.entity.Menu;
 import com.example.windowPos.orderManagement.entity.OrderManagement;
-import com.example.windowPos.orderManagement.entity.SalesPause;
+import com.example.windowPos.setting.dto.SalesPauseDto;
+import com.example.windowPos.setting.entity.SalesPause;
 
 import java.util.stream.Collectors;
 
