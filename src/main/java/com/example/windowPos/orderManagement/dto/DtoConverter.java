@@ -23,7 +23,15 @@ public class DtoConverter {
         orderManagementDto.setEstimatedCookingTime(order.getEstimatedCookingTime());
         orderManagementDto.setEstimatedArrivalTime(order.getEstimatedArrivalTime());
         orderManagementDto.setMenuList(order.getMenuList().stream().map(DtoConverter::convertToDto).collect(Collectors.toList()));
-        orderManagementDto.setSalesPause(convertToDto(order.getSalesPause()));
+
+        // Null 체크 후 변환
+        if (order.getSalesPause() != null) {
+            orderManagementDto.setSalesPause(DtoConverter.convertToDto(order.getSalesPause()));
+        } else {
+            orderManagementDto.setSalesPause(null);
+        }
+
+
         return orderManagementDto;
     }
 

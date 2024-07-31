@@ -36,6 +36,9 @@ dependencies {
 	testImplementation 'org.springframework.security:spring-security-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
+	//	localDataTime json으로 직렬화 or 역직렬화를 하기 위한 모듈
+	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.17.2'
+
 	//	테스트 코드를 위함
 	testImplementation 'org.mockito:mockito-core'
 

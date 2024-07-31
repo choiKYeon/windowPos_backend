@@ -3,6 +3,7 @@ package com.example.windowPos.orderManagement.entity;
 import com.example.windowPos.global.baseentity.BaseEntity;
 import com.example.windowPos.orderManagement.orderEnum.OrderStatus;
 import com.example.windowPos.orderManagement.orderEnum.OrderType;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -21,6 +22,7 @@ import java.util.List;
 public class OrderManagement extends BaseEntity {
 
     //    주문 시간
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime orderTime;
 
     //    요청사항
@@ -51,7 +53,7 @@ public class OrderManagement extends BaseEntity {
     private Integer estimatedCookingTime;
 
     //    도착 예정 시간
-    private LocalDateTime estimatedArrivalTime;
+    private Integer estimatedArrivalTime;
 
     //    영업 중단
     @OneToOne(mappedBy = "orderManagement", cascade = CascadeType.ALL)

@@ -46,7 +46,7 @@ public class OrderManagementService {
         OrderManagement order = OrderManagement.builder()
                 .orderTime(LocalDateTime.now())
                 .request(orderManagementDto.getRequest())
-                .address(orderManagementDto.getRequest())
+                .address(orderManagementDto.getAddress())
                 .totalPrice(orderManagementDto.getTotalPrice())
                 .orderNumber(orderNumber)
                 .orderStatus(OrderStatus.WAITING)
