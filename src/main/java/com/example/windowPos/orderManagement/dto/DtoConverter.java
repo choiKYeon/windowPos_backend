@@ -17,9 +17,9 @@ public class DtoConverter {
         orderManagementDto.setAddress(order.getAddress());
         orderManagementDto.setTotalPrice(order.getTotalPrice());
         orderManagementDto.setOrderNumber(order.getOrderNumber());
-        orderManagementDto.setOrderStatus(order.getOrderStatus());
-        orderManagementDto.setOrderType(order.getOrderType());
-        orderManagementDto.setRejectionReason(order.getRejectionReason());
+//        Enum -> String 타입 변환
+        orderManagementDto.setOrderStatus(order.getOrderStatus() != null ? order.getOrderStatus().name() : null);
+        orderManagementDto.setOrderType(order.getOrderType() != null ? order.getOrderType().name() : null);
         orderManagementDto.setEstimatedCookingTime(order.getEstimatedCookingTime());
         orderManagementDto.setEstimatedArrivalTime(order.getEstimatedArrivalTime());
         orderManagementDto.setMenuList(order.getMenuList().stream().map(DtoConverter::convertToDto).collect(Collectors.toList()));
