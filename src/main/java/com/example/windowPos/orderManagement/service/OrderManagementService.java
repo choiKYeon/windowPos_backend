@@ -1,5 +1,6 @@
 package com.example.windowPos.orderManagement.service;
 
+import com.example.windowPos.dtoConverter.DtoConverter;
 import com.example.windowPos.orderManagement.dto.MenuDto;
 import com.example.windowPos.orderManagement.dto.OrderManagementDto;
 import com.example.windowPos.orderManagement.dto.OrderUpdateRequest;
@@ -8,6 +9,11 @@ import com.example.windowPos.orderManagement.entity.OrderManagement;
 import com.example.windowPos.orderManagement.orderEnum.OrderStatus;
 import com.example.windowPos.orderManagement.orderEnum.OrderType;
 import com.example.windowPos.orderManagement.repository.OrderManagementRepository;
+import com.example.windowPos.setting.dto.SalesPauseDto;
+import com.example.windowPos.setting.entity.SalesPause;
+import com.example.windowPos.setting.repository.SalesPauseRepository;
+import com.example.windowPos.setting.service.SalesPauseService;
+import com.example.windowPos.setting.settingEnum.SalesStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,6 +26,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class OrderManagementService {
     private final OrderManagementRepository orderManagementRepository;
+    private final SalesPauseService salesPauseService;
 
 //    메뉴주문을 Dto로 변환해주는 구문
     private Menu convertToEntity(MenuDto menuDto) {
@@ -39,12 +46,8 @@ public class OrderManagementService {
     @Transactional
     public OrderManagement createOrder(OrderManagementDto orderManagementDto) {
 
-        // 영업 중인지 확인
-        OrderManagement currentOrderManagement = orderManagementRepository.findById(orderManagementDto.getId())
-                .orElseThrow(() -> new RuntimeException("주문 관리 객체를 찾을 수 없습니다."));
-
-        if (!currentOrderManagement.getOperate()) {
-            throw new IllegalStateException("현재 영업 중이 아닙니다. 주문을 생성할 수 없습니다.");
+        if (salesPauseService.isSalesPaused()) {
+            throw new IllegalStateException("현재 영업이 일시 정지 상태입니다. 주문을 생성할 수 없습니다.");
         }
 
         Long orderNumber = getNextOrderNumber();
@@ -76,12 +79,8 @@ public class OrderManagementService {
     public void updateOrderStatus(OrderUpdateRequest request) {
         if (request == null) return;
 
-        // 영업 중인지 확인
-        OrderManagement currentOrderManagement = orderManagementRepository.findById(request.getId())
-                .orElseThrow(() -> new RuntimeException("주문 관리 객체를 찾을 수 없습니다."));
-
-        if (!currentOrderManagement.getOperate()) {
-            throw new IllegalStateException("현재 영업 중이 아닙니다. 주문을 생성할 수 없습니다.");
+        if (salesPauseService.isSalesPaused()) {
+            throw new IllegalStateException("현재 영업이 일시 정지 상태입니다. 주문을 생성할 수 없습니다.");
         }
 
         // 주문id로 주문을 조회

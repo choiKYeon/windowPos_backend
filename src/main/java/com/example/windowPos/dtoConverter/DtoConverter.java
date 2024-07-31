@@ -1,5 +1,7 @@
-package com.example.windowPos.orderManagement.dto;
+package com.example.windowPos.dtoConverter;
 
+import com.example.windowPos.orderManagement.dto.MenuDto;
+import com.example.windowPos.orderManagement.dto.OrderManagementDto;
 import com.example.windowPos.orderManagement.entity.Menu;
 import com.example.windowPos.orderManagement.entity.OrderManagement;
 import com.example.windowPos.setting.dto.SalesPauseDto;
@@ -31,8 +33,6 @@ public class DtoConverter {
         } else {
             orderManagementDto.setSalesPause(null);
         }
-
-
         return orderManagementDto;
     }
 
