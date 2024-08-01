@@ -1,19 +1,15 @@
 package com.example.windowPos.orderManagement.service;
 
-import com.example.windowPos.dtoConverter.DtoConverter;
 import com.example.windowPos.orderManagement.dto.MenuDto;
 import com.example.windowPos.orderManagement.dto.OrderManagementDto;
 import com.example.windowPos.orderManagement.dto.OrderUpdateRequest;
 import com.example.windowPos.orderManagement.entity.Menu;
 import com.example.windowPos.orderManagement.entity.OrderManagement;
+import com.example.windowPos.orderManagement.entity.OrderUpdate;
 import com.example.windowPos.orderManagement.orderEnum.OrderStatus;
 import com.example.windowPos.orderManagement.orderEnum.OrderType;
 import com.example.windowPos.orderManagement.repository.OrderManagementRepository;
-import com.example.windowPos.setting.dto.SalesPauseDto;
-import com.example.windowPos.setting.entity.SalesPause;
-import com.example.windowPos.setting.repository.SalesPauseRepository;
 import com.example.windowPos.setting.service.SalesPauseService;
-import com.example.windowPos.setting.settingEnum.SalesStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -108,6 +104,23 @@ public class OrderManagementService {
             default:
                 throw new IllegalArgumentException("상태 업로드 실패");
         }
+
+        // OrderUpdate 객체가 없는 경우 새로 생성
+        if (order.getOrderUpdate() == null) {
+            order.setOrderUpdate(new OrderUpdate());
+        }
+
+        // 주문 업데이트
+        if (request.getRejectionReason() != null) {
+            order.getOrderUpdate().setRejectionReason(request.getRejectionReason());
+        }
+        if (request.getEstimatedCookingTime() != null) {
+            order.getOrderUpdate().setEstimatedCookingTime(request.getEstimatedCookingTime());
+        }
+        if (request.getEstimatedArrivalTime() != null) {
+            order.getOrderUpdate().setEstimatedArrivalTime(request.getEstimatedArrivalTime());
+        }
+
         orderManagementRepository.save(order);
     }
 }

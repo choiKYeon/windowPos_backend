@@ -13,4 +13,5 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 @Entity
 public class EstimatedArrivalTime extends BaseEntity {
+    private String test;
 }

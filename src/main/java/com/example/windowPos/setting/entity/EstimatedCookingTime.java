@@ -13,4 +13,5 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 @Entity
 public class EstimatedCookingTime extends BaseEntity {
+    private String test;
 }

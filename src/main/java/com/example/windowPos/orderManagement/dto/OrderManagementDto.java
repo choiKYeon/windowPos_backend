@@ -1,5 +1,6 @@
 package com.example.windowPos.orderManagement.dto;
 
+import com.example.windowPos.orderManagement.entity.OrderUpdate;
 import com.example.windowPos.setting.dto.SalesPauseDto;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
@@ -38,17 +39,8 @@ public class OrderManagementDto {
     //    포장인지 배달인지 주문 타입
     private String orderType;
 
-    //    주문 거절 사유
-    private String rejectionReason;
-
-    //    예상 조리시간
-    private Integer estimatedCookingTime;
-
-    //    도착 예상 시간
-    private Integer estimatedArrivalTime;
-
-    //    영업 중단
-    private SalesPauseDto salesPause;
+    //    주문 업데이트 상태
+    private OrderUpdateRequest orderUpdateRequest;
 
     //    메뉴 리스트
     private List<MenuDto> menuList;
