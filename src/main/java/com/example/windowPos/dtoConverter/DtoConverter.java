@@ -8,7 +8,7 @@ import com.example.windowPos.orderManagement.entity.Menu;
 import com.example.windowPos.orderManagement.entity.MenuOption;
 import com.example.windowPos.orderManagement.entity.OrderManagement;
 import com.example.windowPos.orderManagement.entity.OrderUpdate;
-import com.example.windowPos.setting.dto.SalesPauseDto;
+import com.example.windowPos.setting.dto.OperatePauseDto;
 import com.example.windowPos.setting.entity.OperatePause;
 
 import java.util.stream.Collectors;
@@ -43,7 +43,7 @@ public class DtoConverter {
         return orderManagementDto;
     }
 
-//    OrderUpdate 객체를 DTO로 변환하는 메서드
+    //    OrderUpdate 객체를 DTO로 변환하는 메서드
     public static OrderUpdateRequest convertToDto(OrderUpdate orderUpdate) {
         OrderUpdateRequest orderUpdateRequest = new OrderUpdateRequest();
         orderUpdateRequest.setId(orderUpdate.getId());
@@ -68,7 +68,7 @@ public class DtoConverter {
         return menuDto;
     }
 
-//    MenuOption 객체를 DTO로 변환하는 메서드
+    //    MenuOption 객체를 DTO로 변환하는 메서드
     public static MenuOptionDto convertToDto(MenuOption menuOption) {
         MenuOptionDto menuOptionDto = new MenuOptionDto();
         menuOptionDto.setId(menuOption.getId());
@@ -78,11 +78,11 @@ public class DtoConverter {
     }
 
     // SalesPause 객체를 DTO로 변환하는 메서드
-    public static SalesPauseDto convertToDto(OperatePause operatePause) {
-        SalesPauseDto salesPauseDto = new SalesPauseDto();
-        salesPauseDto.setId(operatePause.getId());
-        salesPauseDto.setSalesPauseStartTime(operatePause.getSalesPauseStartTime());
-        salesPauseDto.setSalesPauseEndTime(operatePause.getSalesPauseEndTime());
-        return salesPauseDto;
+    public static OperatePauseDto convertToDto(OperatePause operatePause) {
+        OperatePauseDto operatePauseDto = new OperatePauseDto();
+        operatePauseDto.setId(operatePause.getId());
+        operatePauseDto.setSalesPauseStartTime(operatePause.getSalesPauseStartTime());
+        operatePauseDto.setSalesPauseEndTime(operatePause.getSalesPauseEndTime());
+        return operatePauseDto;
     }
 }

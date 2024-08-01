@@ -1,11 +1,10 @@
 package com.example.windowPos.orderManagement.dto;
 
-import com.example.windowPos.orderManagement.entity.OrderUpdate;
-import com.example.windowPos.setting.dto.SalesPauseDto;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,8 +18,8 @@ public class OrderManagementDto {
     private Long id;
 
     //    주문 시간
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
-    private LocalDateTime orderTime;
+    @JsonFormat(pattern = "HH:mm:ss")
+    private LocalTime orderTime;
 
     //    요청사항
     private String request;

@@ -4,13 +4,14 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class SalesPauseDto {
+public class OperatePauseDto {
 
     private Long id;
 
@@ -18,10 +19,10 @@ public class SalesPauseDto {
     private String salesStatus;
 
     // 영업 일시 정지 시작 시간
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
-    private LocalDateTime salesPauseStartTime;
+    @JsonFormat(pattern = "HH:mm:ss")
+    private LocalTime salesPauseStartTime;
 
     // 영업 일시 정지 종료 시간
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
-    private LocalDateTime salesPauseEndTime;
+    @JsonFormat(pattern = "HH:mm:ss")
+    private LocalTime salesPauseEndTime;
 }

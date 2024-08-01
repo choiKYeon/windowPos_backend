@@ -11,12 +11,12 @@ import com.example.windowPos.orderManagement.entity.OrderUpdate;
 import com.example.windowPos.orderManagement.orderEnum.OrderStatus;
 import com.example.windowPos.orderManagement.orderEnum.OrderType;
 import com.example.windowPos.orderManagement.repository.OrderManagementRepository;
-import com.example.windowPos.setting.service.SalesPauseService;
+import com.example.windowPos.setting.service.OperatePauseService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class OrderManagementService {
     private final OrderManagementRepository orderManagementRepository;
-    private final SalesPauseService salesPauseService;
+    private final OperatePauseService operatePauseService;
 
     //    메뉴주문을 Dto로 변환해주는 구문
     private Menu convertToEntity(MenuDto menuDto) {
@@ -64,7 +64,7 @@ public class OrderManagementService {
     @Transactional
     public OrderManagement createOrder(OrderManagementDto orderManagementDto) {
 
-        if (salesPauseService.isSalesPaused()) {
+        if (operatePauseService.isSalesPaused()) {
             throw new IllegalStateException("현재 영업이 일시 정지 상태입니다. 주문을 생성할 수 없습니다.");
         }
 
@@ -78,7 +78,7 @@ public class OrderManagementService {
                 .collect(Collectors.toList());
 
         OrderManagement order = OrderManagement.builder()
-                .orderTime(LocalDateTime.now())
+                .orderTime(LocalTime.now())
                 .request(orderManagementDto.getRequest())
                 .address(orderManagementDto.getAddress())
                 .menuTotalPrice(0L)
@@ -124,7 +124,7 @@ public class OrderManagementService {
     public void updateOrderStatus(OrderUpdateRequest request) {
         if (request == null) return;
 
-        if (salesPauseService.isSalesPaused()) {
+        if (operatePauseService.isSalesPaused()) {
             throw new IllegalStateException("현재 영업이 일시 정지 상태입니다. 주문을 생성할 수 없습니다.");
         }
 
