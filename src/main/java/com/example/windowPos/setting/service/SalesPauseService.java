@@ -1,6 +1,6 @@
 package com.example.windowPos.setting.service;
 
-import com.example.windowPos.setting.entity.SalesPause;
+import com.example.windowPos.setting.entity.OperatePause;
 import com.example.windowPos.setting.repository.SalesPauseRepository;
 import com.example.windowPos.setting.settingEnum.SalesStatus;
 import lombok.RequiredArgsConstructor;
@@ -15,13 +15,13 @@ public class SalesPauseService {
 
     // 현재 시간이 영업 일시 정지 기간 내에 있는지 확인
     public boolean isSalesPaused() {
-        SalesPause salesPause = salesPauseRepository.findCurrentSalesPause();
+        OperatePause operatePause = salesPauseRepository.findCurrentSalesPause();
 
-        if (salesPause == null || salesPause.getSalesStatus() != SalesStatus.START) {
+        if (operatePause == null || operatePause.getSalesStatus() != SalesStatus.START) {
             return false;
         }
         LocalDateTime now = LocalDateTime.now();
-        return (salesPause.getSalesPauseStartTime() != null && now.isAfter(salesPause.getSalesPauseStartTime())) &&
-                (salesPause.getSalesPauseEndTime() != null && now.isBefore(salesPause.getSalesPauseEndTime()));
+        return (operatePause.getSalesPauseStartTime() != null && now.isAfter(operatePause.getSalesPauseStartTime())) &&
+                (operatePause.getSalesPauseEndTime() != null && now.isBefore(operatePause.getSalesPauseEndTime()));
     }
 }

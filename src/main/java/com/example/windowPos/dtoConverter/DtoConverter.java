@@ -1,13 +1,15 @@
 package com.example.windowPos.dtoConverter;
 
 import com.example.windowPos.orderManagement.dto.MenuDto;
+import com.example.windowPos.orderManagement.dto.MenuOptionDto;
 import com.example.windowPos.orderManagement.dto.OrderManagementDto;
 import com.example.windowPos.orderManagement.dto.OrderUpdateRequest;
 import com.example.windowPos.orderManagement.entity.Menu;
+import com.example.windowPos.orderManagement.entity.MenuOption;
 import com.example.windowPos.orderManagement.entity.OrderManagement;
 import com.example.windowPos.orderManagement.entity.OrderUpdate;
 import com.example.windowPos.setting.dto.SalesPauseDto;
-import com.example.windowPos.setting.entity.SalesPause;
+import com.example.windowPos.setting.entity.OperatePause;
 
 import java.util.stream.Collectors;
 
@@ -21,10 +23,15 @@ public class DtoConverter {
         orderManagementDto.setRequest(order.getRequest());
         orderManagementDto.setAddress(order.getAddress());
         orderManagementDto.setTotalPrice(order.getTotalPrice());
+        orderManagementDto.setMenuTotalPrice(order.getMenuTotalPrice());
         orderManagementDto.setOrderNumber(order.getOrderNumber());
+        orderManagementDto.setDeliveryFee(order.getDeliveryFee());
+        orderManagementDto.setSpoonFork(order.getSpoonFork());
+
 //        Enum -> String 타입 변환
         orderManagementDto.setOrderStatus(order.getOrderStatus() != null ? order.getOrderStatus().name() : null);
         orderManagementDto.setOrderType(order.getOrderType() != null ? order.getOrderType().name() : null);
+
         orderManagementDto.setMenuList(order.getMenuList().stream().map(DtoConverter::convertToDto).collect(Collectors.toList()));
 
         if (order.getOrderUpdate() != null) {
@@ -51,16 +58,31 @@ public class DtoConverter {
         MenuDto menuDto = new MenuDto();
         menuDto.setId(menu.getId());
         menuDto.setMenuName(menu.getMenuName());
+        menuDto.setCount(menu.getCount());
         menuDto.setPrice(menu.getPrice());
+
+        menuDto.setMenuOptionDtoList(menu.getMenuOptions().stream()
+                .map(DtoConverter::convertToDto)
+                .collect(Collectors.toList()));
+
         return menuDto;
     }
 
+//    MenuOption 객체를 DTO로 변환하는 메서드
+    public static MenuOptionDto convertToDto(MenuOption menuOption) {
+        MenuOptionDto menuOptionDto = new MenuOptionDto();
+        menuOptionDto.setId(menuOption.getId());
+        menuOptionDto.setOptionName(menuOption.getOptionName());
+        menuOptionDto.setOptionPrice(menuOption.getOptionPrice());
+        return menuOptionDto;
+    }
+
     // SalesPause 객체를 DTO로 변환하는 메서드
-    public static SalesPauseDto convertToDto(SalesPause salesPause) {
+    public static SalesPauseDto convertToDto(OperatePause operatePause) {
         SalesPauseDto salesPauseDto = new SalesPauseDto();
-        salesPauseDto.setId(salesPause.getId());
-        salesPauseDto.setSalesPauseStartTime(salesPause.getSalesPauseStartTime());
-        salesPauseDto.setSalesPauseEndTime(salesPause.getSalesPauseEndTime());
+        salesPauseDto.setId(operatePause.getId());
+        salesPauseDto.setSalesPauseStartTime(operatePause.getSalesPauseStartTime());
+        salesPauseDto.setSalesPauseEndTime(operatePause.getSalesPauseEndTime());
         return salesPauseDto;
     }
 }
