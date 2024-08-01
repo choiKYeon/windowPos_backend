@@ -20,7 +20,7 @@ public class EstimatedArrivalTime extends BaseEntity {
     private Boolean estimatedArrivalTimeControl= false;
 
     //    예상 도착시간
-    private Integer estimatedArrivalTime;
+    private Integer estimatedArrivalTime = 40;
 
     @OneToOne
     @JoinColumn(name = "setting_id")

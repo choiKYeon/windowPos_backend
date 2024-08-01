@@ -1,7 +1,6 @@
 package com.example.windowPos.setting.entity;
 
 import com.example.windowPos.global.baseentity.BaseEntity;
-import com.example.windowPos.orderManagement.entity.OrderManagement;
 import com.example.windowPos.setting.settingEnum.DayOfTheWeek;
 import com.example.windowPos.setting.settingEnum.RegularClosedDays;
 import com.fasterxml.jackson.annotation.JsonBackReference;
@@ -20,11 +19,11 @@ public class RegularHoliday extends BaseEntity {
 
     //    무슨 요일인지
     @Enumerated(EnumType.STRING)
-    private DayOfTheWeek dayOfTheWeek;
+    private DayOfTheWeek dayOfTheWeek = DayOfTheWeek.MONDAY;
 
     //    매 주 언제 정기휴무인지 ex) 첫째 주 / 둘째 주 / 매 주
     @Enumerated(EnumType.STRING)
-    private RegularClosedDays regularClosedDays;
+    private RegularClosedDays regularClosedDays = RegularClosedDays.FIRST;
 
     @ManyToOne
     @JoinColumn(name = "closed_days_id")

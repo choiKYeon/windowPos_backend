@@ -11,7 +11,6 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 @Getter
 @AllArgsConstructor
@@ -21,10 +20,10 @@ import java.time.LocalDateTime;
 public class TemporaryHoliday extends BaseEntity {
 
     //    임시 휴무 시작 날짜
-    private LocalDate temporaryHolidayStartDate;
+    private LocalDate temporaryHolidayStartDate = LocalDate.now();
 
     //    임시 휴무 종료 날짜
-    private LocalDate temporaryHolidayEndDate;
+    private LocalDate temporaryHolidayEndDate = LocalDate.now().plusDays(1);
 
     @ManyToOne
     @JoinColumn(name = "closed_days_id")

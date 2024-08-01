@@ -1,14 +1,15 @@
 package com.example.windowPos.member.service;
 
-
-import com.example.windowPos.global.encrypt.EncryptionUtils;
 import com.example.windowPos.member.entity.Member;
 import com.example.windowPos.member.repository.MemberRepository;
 import com.example.windowPos.redis.service.RedisService;
 import com.example.windowPos.redis.service.RedisServiceImpl;
+import com.example.windowPos.setting.entity.Setting;
+import com.example.windowPos.setting.repository.SettingRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
 import java.util.Optional;
@@ -21,6 +22,18 @@ public class MemberService {
     private final RedisServiceImpl redisServiceImpl;
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
+    private final SettingRepository settingRepository;
+
+    @Transactional
+    public Setting newMemberLogin(Member member) {
+        Setting setting = settingRepository.findByMember(member).orElse(null);
+        if (setting == null) {
+            setting.setMember(member);
+            settingRepository.save(setting);
+        }
+
+        return setting;
+    }
 
     //    유저 아이디를 통해 member를 찾는 구문 (Dto값을 반환)
     public Optional<Member> findByUsername(String username) {
