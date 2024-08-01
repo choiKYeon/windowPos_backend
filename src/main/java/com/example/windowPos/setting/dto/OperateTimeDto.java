@@ -2,7 +2,7 @@ package com.example.windowPos.setting.dto;
 
 import lombok.*;
 
-import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 @Getter
 @Setter
@@ -17,27 +17,27 @@ public class OperateTimeDto {
     private Boolean weekdayAllDay = false;
 
     //    평일 시작 시간
-    private LocalDateTime weekdayStartTime;
+    private LocalTime weekdayStartTime;
 
     //    평일 종료 시간
-    private LocalDateTime weekdayEndTime;
+    private LocalTime weekdayEndTime;
 
     //    토요일 24시간 영업
     private Boolean saturdayAllDay = false;
 
     //    토요일 시작 시간
-    private LocalDateTime saturdayStartTime;
+    private LocalTime saturdayStartTime;
 
     //    토요일 종료 시간
-    private LocalDateTime saturdayEndTime;
+    private LocalTime saturdayEndTime;
 
     //    일요일 24시간 영업
     private Boolean SundayAllDay = false;
 
     //    일요일 시작 시간
-    private LocalDateTime SundayStartTime;
+    private LocalTime SundayStartTime;
 
     //    일요일 종료 시간
-    private LocalDateTime SundayEndTime;
+    private LocalTime SundayEndTime;
 
 }

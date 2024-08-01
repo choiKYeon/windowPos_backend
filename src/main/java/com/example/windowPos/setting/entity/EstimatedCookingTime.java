@@ -20,7 +20,7 @@ public class EstimatedCookingTime extends BaseEntity {
     private Boolean estimatedCookingTimeControl = false;
 
     //    예상 조리시간
-    private Integer estimatedCookingTime;
+    private Integer estimatedCookingTime = 15;
 
     @OneToOne
     @JoinColumn(name = "setting_id")

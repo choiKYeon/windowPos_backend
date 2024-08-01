@@ -1,7 +1,10 @@
 package com.example.windowPos.member.entity;
 
 import com.example.windowPos.global.baseentity.BaseEntity;
+import com.example.windowPos.setting.entity.Setting;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -40,4 +43,10 @@ public class Member extends BaseEntity {
         return "gysoft".equals(username);
     }
 
+    @OneToOne(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Setting setting;
+
+    public void setSetting(Setting setting) {
+        this.setting = setting;
+    }
 }

@@ -9,7 +9,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
-import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 @Getter
 @AllArgsConstructor
@@ -22,28 +22,28 @@ public class OperateTime extends BaseEntity {
     private Boolean weekdayAllDay = false;
 
     //    평일 시작 시간
-    private LocalDateTime weekdayStartTime;
+    private LocalTime weekdayStartTime = LocalTime.now().withHour(0).withMinute(0);
 
     //    평일 종료 시간
-    private LocalDateTime weekdayEndTime;
+    private LocalTime weekdayEndTime = LocalTime.now().withHour(23).withMinute(59);
 
     //    토요일 24시간 영업
     private Boolean saturdayAllDay = false;
 
     //    토요일 시작 시간
-    private LocalDateTime saturdayStartTime;
+    private LocalTime saturdayStartTime = LocalTime.now().withHour(0).withMinute(0);
 
     //    토요일 종료 시간
-    private LocalDateTime saturdayEndTime;
+    private LocalTime saturdayEndTime = LocalTime.now().withHour(23).withMinute(59);
 
     //    일요일 24시간 영업
     private Boolean SundayAllDay = false;
 
     //    일요일 시작 시간
-    private LocalDateTime SundayStartTime;
+    private LocalTime SundayStartTime = LocalTime.now().withHour(0).withMinute(0);
 
     //    일요일 종료 시간
-    private LocalDateTime SundayEndTime;
+    private LocalTime SundayEndTime = LocalTime.now().withHour(23).withMinute(59);
 
     @OneToOne
     @JoinColumn(name = "setting_id")

@@ -11,4 +11,23 @@ public class SettingDto {
 
     private Long id;
 
+//    영업 중단
+    private OperatePauseDto operatePauseDto;
+
+//    영업 시간
+    private OperateTimeDto operateTimeDto;
+
+//    조리 예상 시간
+    private EstimatedCookingTimeDto estimatedCookingTimeDto;
+
+//    도착 예상 시간
+    private EstimatedArrivalTimeDto estimatedArrivalTimeDto;
+
+//    휴무일
+    private ClosedDaysDto closedDaysDto;
+
+//    브레이크 타임
+    private BreakTimeDto breakTimeDto;
+
+    private Long memberId;
 }

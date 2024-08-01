@@ -19,10 +19,10 @@ import java.time.LocalTime;
 public class BreakTime extends BaseEntity {
 
 //    브레이크 타임 시작 시간
-    private LocalTime breakTimeStart;
+    private LocalTime breakTimeStart = LocalTime.of(0, 0);
 
 //    브레이크 타임 종료 시간
-    private LocalTime breakTimeEnd;
+    private LocalTime breakTimeEnd = LocalTime.of(0, 0);
 
     @OneToOne
     @JoinColumn(name = "setting_id")

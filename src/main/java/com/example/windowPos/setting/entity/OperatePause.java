@@ -9,7 +9,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 @Getter
@@ -21,7 +20,7 @@ public class OperatePause extends BaseEntity {
 
     //    영업 상태
     @Enumerated(EnumType.STRING)
-    private OperateStatus operateStatus;
+    private OperateStatus operateStatus = OperateStatus.END;
 
     // 영업 일시 정지 시작 시간
     @JsonFormat(pattern = "HH:mm:ss")
@@ -29,9 +28,13 @@ public class OperatePause extends BaseEntity {
 
     // 영업 일시 정지 종료 시간
     @JsonFormat(pattern = "HH:mm:ss")
-    private LocalTime salesPauseEndTime;
+    private LocalTime salesPauseEndTime = LocalTime.of(0, 0);
 
     @OneToOne
     @JoinColumn(name = "setting_id")
     private Setting setting;
+
+    public void setSetting(Setting setting) {
+        this.setting = setting;
+    }
 }
