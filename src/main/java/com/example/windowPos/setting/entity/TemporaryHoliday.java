@@ -22,8 +22,16 @@ public class TemporaryHoliday extends BaseEntity {
     //    임시 휴무 시작 날짜
     private LocalDate temporaryHolidayStartDate = LocalDate.now();
 
+    public void setTemporaryHolidayStartDate(LocalDate temporaryHolidayStartDate) {
+        this.temporaryHolidayStartDate = temporaryHolidayStartDate;
+    }
+
     //    임시 휴무 종료 날짜
     private LocalDate temporaryHolidayEndDate = LocalDate.now().plusDays(1);
+
+    public void setTemporaryHolidayEndDate(LocalDate temporaryHolidayEndDate) {
+        this.temporaryHolidayEndDate = temporaryHolidayEndDate;
+    }
 
     @ManyToOne
     @JoinColumn(name = "closed_days_id")

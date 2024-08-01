@@ -21,10 +21,22 @@ public class BreakTime extends BaseEntity {
 //    브레이크 타임 시작 시간
     private LocalTime breakTimeStart = LocalTime.of(0, 0);
 
+    public void setBreakTimeStart(LocalTime breakTimeStart) {
+        this.breakTimeStart = breakTimeStart;
+    }
+
 //    브레이크 타임 종료 시간
     private LocalTime breakTimeEnd = LocalTime.of(0, 0);
+
+    public void setBreakTimeEnd(LocalTime breakTimeEnd) {
+        this.breakTimeEnd = breakTimeEnd;
+    }
 
     @OneToOne
     @JoinColumn(name = "setting_id")
     private Setting setting;
+
+    public void setSetting(Setting setting) {
+        this.setting = setting;
+    }
 }

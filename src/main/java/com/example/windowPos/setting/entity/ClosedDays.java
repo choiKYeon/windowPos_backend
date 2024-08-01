@@ -1,9 +1,6 @@
 package com.example.windowPos.setting.entity;
 
 import com.example.windowPos.global.baseentity.BaseEntity;
-import com.example.windowPos.orderManagement.entity.Menu;
-import com.example.windowPos.setting.settingEnum.DayOfTheWeek;
-import com.example.windowPos.setting.settingEnum.RegularClosedDays;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
@@ -53,4 +50,8 @@ public class ClosedDays extends BaseEntity {
     @OneToOne
     @JoinColumn(name = "setting_id")
     private Setting setting;
+
+    public void setSetting(Setting setting) {
+        this.setting = setting;
+    }
 }

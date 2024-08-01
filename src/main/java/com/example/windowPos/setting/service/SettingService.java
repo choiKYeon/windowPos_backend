@@ -31,6 +31,8 @@ public class SettingService {
         Member member = memberRepository.findById(id).orElse(null);
         Setting setting = settingRepository.findByMember(member).orElse(null);
 
+        if (settingDto.getOperatePauseDto() != null) {
 
+        }
     }
 }
