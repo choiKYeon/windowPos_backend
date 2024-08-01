@@ -21,9 +21,17 @@ public class RegularHoliday extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private DayOfTheWeek dayOfTheWeek = DayOfTheWeek.MONDAY;
 
+    public void setDayOfTheWeek(DayOfTheWeek dayOfTheWeek) {
+        this.dayOfTheWeek = dayOfTheWeek;
+    }
+
     //    매 주 언제 정기휴무인지 ex) 첫째 주 / 둘째 주 / 매 주
     @Enumerated(EnumType.STRING)
     private RegularClosedDays regularClosedDays = RegularClosedDays.FIRST;
+
+    public void setRegularClosedDays(RegularClosedDays regularClosedDays) {
+        this.regularClosedDays = regularClosedDays;
+    }
 
     @ManyToOne
     @JoinColumn(name = "closed_days_id")
