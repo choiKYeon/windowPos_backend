@@ -2,8 +2,10 @@ package com.example.windowPos.dtoConverter;
 
 import com.example.windowPos.orderManagement.dto.MenuDto;
 import com.example.windowPos.orderManagement.dto.OrderManagementDto;
+import com.example.windowPos.orderManagement.dto.OrderUpdateRequest;
 import com.example.windowPos.orderManagement.entity.Menu;
 import com.example.windowPos.orderManagement.entity.OrderManagement;
+import com.example.windowPos.orderManagement.entity.OrderUpdate;
 import com.example.windowPos.setting.dto.SalesPauseDto;
 import com.example.windowPos.setting.entity.SalesPause;
 
@@ -23,17 +25,25 @@ public class DtoConverter {
 //        Enum -> String 타입 변환
         orderManagementDto.setOrderStatus(order.getOrderStatus() != null ? order.getOrderStatus().name() : null);
         orderManagementDto.setOrderType(order.getOrderType() != null ? order.getOrderType().name() : null);
-        orderManagementDto.setEstimatedCookingTime(order.getEstimatedCookingTime());
-        orderManagementDto.setEstimatedArrivalTime(order.getEstimatedArrivalTime());
         orderManagementDto.setMenuList(order.getMenuList().stream().map(DtoConverter::convertToDto).collect(Collectors.toList()));
 
-        // Null 체크 후 변환
-        if (order.getSalesPause() != null) {
-            orderManagementDto.setSalesPause(DtoConverter.convertToDto(order.getSalesPause()));
+        if (order.getOrderUpdate() != null) {
+            orderManagementDto.setOrderUpdateRequest(convertToDto(order.getOrderUpdate()));
         } else {
-            orderManagementDto.setSalesPause(null);
+            orderManagementDto.setOrderUpdateRequest(null);
         }
+
         return orderManagementDto;
+    }
+
+//    OrderUpdate 객체를 DTO로 변환하는 메서드
+    public static OrderUpdateRequest convertToDto(OrderUpdate orderUpdate) {
+        OrderUpdateRequest orderUpdateRequest = new OrderUpdateRequest();
+        orderUpdateRequest.setId(orderUpdate.getId());
+        orderUpdateRequest.setRejectionReason(orderUpdate.getRejectionReason());
+        orderUpdateRequest.setEstimatedArrivalTime(orderUpdate.getEstimatedArrivalTime());
+        orderUpdateRequest.setEstimatedCookingTime(orderUpdate.getEstimatedCookingTime());
+        return orderUpdateRequest;
     }
 
     // Menu 객체를 DTO로 변환하는 메서드

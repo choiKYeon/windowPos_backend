@@ -32,6 +32,6 @@ public class SalesPause extends BaseEntity {
     private LocalDateTime salesPauseEndTime;
 
     @OneToOne
-    @JoinColumn(name = "order_management_id")
-    private OrderManagement orderManagement;
+    @JoinColumn(name = "setting_id")
+    private Setting setting;
 }

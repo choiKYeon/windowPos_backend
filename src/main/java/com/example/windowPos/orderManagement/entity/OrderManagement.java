@@ -21,7 +21,8 @@ import java.util.List;
 @SuperBuilder
 @Entity
 public class OrderManagement extends BaseEntity {
-
+//    근데 주문관리랑 연동하는게아니라 총 가맹점 상태랑 연동을 하는게 맞을듯.
+//    세팅에서 연동시키는게 나을수도 있음.
     //    주문 시간
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime orderTime;
@@ -47,15 +48,16 @@ public class OrderManagement extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private OrderType orderType;
 
-    //    예상 조리시간
-    private Integer estimatedCookingTime;
+//    주문 업데이트 상태
+    @OneToOne(mappedBy = "orderManagement", cascade = CascadeType.ALL, orphanRemoval = true)
+    private OrderUpdate orderUpdate;
 
-    //    도착 예상 시간
-    private Integer estimatedArrivalTime;
-
-    //    영업 중단
-    @OneToOne(mappedBy = "orderManagement", cascade = CascadeType.ALL)
-    private SalesPause salesPause;
+    public void setOrderUpdate(OrderUpdate orderUpdate) {
+        this.orderUpdate = orderUpdate;
+        if (orderUpdate != null) {
+            orderUpdate.setOrderManagement(this);
+        }
+    }
 
     //    메뉴 리스트
     //    @JsonManagedReference는 순환참조 에러를 해결하기 위한 방법
