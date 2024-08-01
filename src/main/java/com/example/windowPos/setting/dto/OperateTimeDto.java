@@ -1,22 +1,17 @@
-package com.example.windowPos.setting.entity;
+package com.example.windowPos.setting.dto;
 
-import com.example.windowPos.global.baseentity.BaseEntity;
-import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.experimental.SuperBuilder;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
 @Getter
-@AllArgsConstructor
+@Setter
 @NoArgsConstructor
-@SuperBuilder
-@Entity
-public class OperateTime extends BaseEntity {
+@AllArgsConstructor
+@Builder
+public class OperateTimeDto {
+
+    private Long id;
 
     //    평일 24시간 영업
     private Boolean weekdayAllDay = false;
@@ -45,7 +40,4 @@ public class OperateTime extends BaseEntity {
     //    일요일 종료 시간
     private LocalDateTime SundayEndTime;
 
-    @OneToOne
-    @JoinColumn(name = "setting_id")
-    private Setting setting;
 }
