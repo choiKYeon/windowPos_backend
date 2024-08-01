@@ -1,9 +1,11 @@
 package com.example.windowPos.orderManagement.service;
 
 import com.example.windowPos.orderManagement.dto.MenuDto;
+import com.example.windowPos.orderManagement.dto.MenuOptionDto;
 import com.example.windowPos.orderManagement.dto.OrderManagementDto;
 import com.example.windowPos.orderManagement.dto.OrderUpdateRequest;
 import com.example.windowPos.orderManagement.entity.Menu;
+import com.example.windowPos.orderManagement.entity.MenuOption;
 import com.example.windowPos.orderManagement.entity.OrderManagement;
 import com.example.windowPos.orderManagement.entity.OrderUpdate;
 import com.example.windowPos.orderManagement.orderEnum.OrderStatus;
@@ -15,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -24,21 +27,40 @@ public class OrderManagementService {
     private final OrderManagementRepository orderManagementRepository;
     private final SalesPauseService salesPauseService;
 
-//    메뉴주문을 Dto로 변환해주는 구문
+    //    메뉴주문을 Dto로 변환해주는 구문
     private Menu convertToEntity(MenuDto menuDto) {
-        return Menu.builder()
+        Menu menu = Menu.builder()
                 .menuName(menuDto.getMenuName())
                 .price(menuDto.getPrice())
+                .count(menuDto.getCount())
+                .build();
+
+        if (menuDto.getMenuOptionDtoList() != null) {
+            List<MenuOption> menuOptions = menuDto.getMenuOptionDtoList().stream()
+                    .map(this::convertToEntityOption)
+                    .collect(Collectors.toList());
+            menu.setMenuOptions(menuOptions);
+        } else {
+            menu.setMenuOptions(Collections.emptyList()); // 빈 리스트로 설정
+        }
+        return menu;
+    }
+
+    //    메뉴옵션을 Dto로 변환해주는 구문
+    private MenuOption convertToEntityOption(MenuOptionDto menuOptionDto) {
+        return MenuOption.builder()
+                .optionName(menuOptionDto.getOptionName())
+                .optionPrice(menuOptionDto.getOptionPrice())
                 .build();
     }
 
-//    주문번호 찾아서 1씩 더하는 구문
+    //    주문번호 찾아서 1씩 더하는 구문
     private Long getNextOrderNumber() {
         Long maxOrderNumber = orderManagementRepository.findMaxOrderNumber();
         return (maxOrderNumber != null) ? maxOrderNumber + 1 : 1;
     }
 
-//    주문 생성하는 구문
+    //    주문 생성하는 구문
     @Transactional
     public OrderManagement createOrder(OrderManagementDto orderManagementDto) {
 
@@ -48,6 +70,9 @@ public class OrderManagementService {
 
         Long orderNumber = getNextOrderNumber();
 
+//        주문 총 가격
+        Long totalPrice = 0L;
+
         List<Menu> menus = orderManagementDto.getMenuList().stream()
                 .map(this::convertToEntity)
                 .collect(Collectors.toList());
@@ -56,7 +81,10 @@ public class OrderManagementService {
                 .orderTime(LocalDateTime.now())
                 .request(orderManagementDto.getRequest())
                 .address(orderManagementDto.getAddress())
-                .totalPrice(orderManagementDto.getTotalPrice())
+                .menuTotalPrice(0L)
+                .totalPrice(0L)
+                .deliveryFee(orderManagementDto.getDeliveryFee())
+                .spoonFork(orderManagementDto.getSpoonFork())
                 .orderNumber(orderNumber)
                 .orderStatus(OrderStatus.WAITING)
 //                String -> Enum타입 변환
@@ -64,8 +92,29 @@ public class OrderManagementService {
                 .menuList(menus)
                 .build();
 
-        menus.forEach(menu -> menu.setOrderManagement(order));
-        order.setMenuList(menus);
+        // 각 메뉴와 옵션을 주문에 연결
+        for (Menu menu : menus) {
+            // 메뉴 옵션 총 가격
+            Long menuOptionTotalPrice = 0L;
+            // 메뉴와 주문 연결
+            menu.setOrderManagement(order);
+
+            // 옵션 가격 총합 계산
+            if (menu.getMenuOptions() != null) {
+                for (MenuOption menuOption : menu.getMenuOptions()) {
+                    menuOptionTotalPrice += menuOption.getOptionPrice();
+                    // 옵션과 메뉴 연결
+                    menuOption.setMenu(menu);
+                }
+            }
+
+            // 메뉴 가격과 옵션 가격 총합을 메뉴 수량에 곱하여 총 가격 계산
+            Long menuTotalPrice = (menu.getPrice() + menuOptionTotalPrice) * menu.getCount();
+            totalPrice += menuTotalPrice;
+        }
+
+        order.setMenuTotalPrice(totalPrice);
+        order.setTotalPrice(totalPrice + orderManagementDto.getDeliveryFee());
 
         return orderManagementRepository.save(order);
     }

@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -27,8 +28,17 @@ public class OrderManagementDto {
     //    고객 주소
     private String address;
 
+    //    메뉴 총 금액
+    private Long menuTotalPrice;
+
     //    총 금액
     private Long totalPrice;
+
+    //    수저포크
+    private Boolean spoonFork;
+
+    //    배달비
+    private Long deliveryFee;
 
     //    주문 번호
     private Long orderNumber;
@@ -43,5 +53,5 @@ public class OrderManagementDto {
     private OrderUpdateRequest orderUpdateRequest;
 
     //    메뉴 리스트
-    private List<MenuDto> menuList;
+    private List<MenuDto> menuList = new ArrayList<>();
 }

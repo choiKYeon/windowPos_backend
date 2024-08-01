@@ -1,7 +1,6 @@
 package com.example.windowPos.setting.entity;
 
 import com.example.windowPos.global.baseentity.BaseEntity;
-import com.example.windowPos.orderManagement.entity.OrderManagement;
 import com.example.windowPos.setting.settingEnum.SalesStatus;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
@@ -17,7 +16,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @SuperBuilder
 @Entity
-public class SalesPause extends BaseEntity {
+public class OperatePause extends BaseEntity {
 
     //    영업 상태
     @Enumerated(EnumType.STRING)

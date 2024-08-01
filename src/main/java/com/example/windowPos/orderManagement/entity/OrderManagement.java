@@ -3,7 +3,6 @@ package com.example.windowPos.orderManagement.entity;
 import com.example.windowPos.global.baseentity.BaseEntity;
 import com.example.windowPos.orderManagement.orderEnum.OrderStatus;
 import com.example.windowPos.orderManagement.orderEnum.OrderType;
-import com.example.windowPos.setting.entity.SalesPause;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
@@ -13,6 +12,7 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -21,7 +21,7 @@ import java.util.List;
 @SuperBuilder
 @Entity
 public class OrderManagement extends BaseEntity {
-//    근데 주문관리랑 연동하는게아니라 총 가맹점 상태랑 연동을 하는게 맞을듯.
+    //    근데 주문관리랑 연동하는게아니라 총 가맹점 상태랑 연동을 하는게 맞을듯.
 //    세팅에서 연동시키는게 나을수도 있음.
     //    주문 시간
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
@@ -33,8 +33,25 @@ public class OrderManagement extends BaseEntity {
     //    고객 주소
     private String address;
 
+    //    메뉴 총 금액
+    private Long menuTotalPrice;
+
+    public void setMenuTotalPrice(Long menuTotalPrice) {
+        this.menuTotalPrice = menuTotalPrice;
+    }
+
     //    총 금액
     private Long totalPrice;
+
+    public void setTotalPrice(Long totalPrice) {
+        this.totalPrice = totalPrice;
+    }
+
+    //    수저포크
+    private Boolean spoonFork;
+
+    //    배달비
+    private Long deliveryFee;
 
     //    주문 번호
     @Column(unique = true)
@@ -48,7 +65,7 @@ public class OrderManagement extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private OrderType orderType;
 
-//    주문 업데이트 상태
+    //    주문 업데이트 상태
     @OneToOne(mappedBy = "orderManagement", cascade = CascadeType.ALL, orphanRemoval = true)
     private OrderUpdate orderUpdate;
 
@@ -63,10 +80,15 @@ public class OrderManagement extends BaseEntity {
     //    @JsonManagedReference는 순환참조 에러를 해결하기 위한 방법
     @OneToMany(mappedBy = "orderManagement", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
-    private List<Menu> menuList;
+    private List<Menu> menuList = new ArrayList<>();
 
     public void setMenuList(List<Menu> menuList) {
         this.menuList = menuList;
+        if (menuList != null) {
+            for (Menu menu : menuList) {
+                menu.setOrderManagement(this);
+            }
+        }
     }
 
     public void acceptOrder() {
@@ -100,8 +122,4 @@ public class OrderManagement extends BaseEntity {
             throw new IllegalStateException("주문을 완료할 수 없는 상태입니다.");
         }
     }
-
-//    주문표 인쇄도 만들어야함
-//    도착 남은 시간 업데이트 로직 짜야함
-
 }
