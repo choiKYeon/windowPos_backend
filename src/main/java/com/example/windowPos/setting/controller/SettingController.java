@@ -2,13 +2,11 @@ package com.example.windowPos.setting.controller;
 
 import com.example.windowPos.global.rs.RsData;
 import com.example.windowPos.member.entity.Member;
-import com.example.windowPos.member.repository.MemberRepository;
+import com.example.windowPos.member.service.MemberService;
 import com.example.windowPos.setting.dto.SettingDto;
 import com.example.windowPos.setting.service.SettingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -17,23 +15,22 @@ import org.springframework.web.bind.annotation.*;
 public class SettingController {
 
     private final SettingService settingService;
-    private final MemberRepository memberRepository;
+    private final MemberService memberService;
 
-//    세팅 정보 불러오기
-    @GetMapping
-    public ResponseEntity<RsData<SettingDto>> getSetting() {
+//    세팅 정보 불러오기 (오류터짐 잡아야함)
+    @GetMapping(value = "/{id}")
+    public ResponseEntity<RsData<SettingDto>> getSetting(@PathVariable("id") Long id) {
 //        현재 로그인한 녀석
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = authentication.getName();
-        Member member = memberRepository.findByUsername(username).orElse(null);
+        Member member = memberService.findById(id).orElse(null);
 
         SettingDto settingDto = settingService.getSettingByMember(member);
         return ResponseEntity.ok(RsData.of("S-1", "세팅 불러오기 성공", settingDto));
     }
 
-//    세팅 업데이트 하는 구문 (수정중)
-    @PutMapping(value = "/{id]")
-    public ResponseEntity<RsData<?>> updateSetting(@PathVariable("id") Integer id, @RequestBody SettingDto settingDto) {
-
+//    세팅 업데이트 하는 구문
+    @PutMapping(value = "/{id}")
+    public ResponseEntity<RsData<?>> updateSetting(@PathVariable("id") Long id, @RequestBody SettingDto settingDto) {
+        settingService.updateSetting(id, settingDto);
+        return ResponseEntity.ok(RsData.of("S-1", "세팅 업데이트 성공"));
     }
 }
