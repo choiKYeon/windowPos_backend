@@ -1,7 +1,9 @@
 package com.example.windowPos.global.config;
 
 import com.example.windowPos.global.customUserDetailService.CustomUserDetailsService;
+import com.example.windowPos.global.filter.JsonAuthenticationFilter;
 import com.example.windowPos.global.filter.JwtAuthenticationFilter;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -59,6 +61,16 @@ public class SecurityConfig{
         daoAuthenticationProvider.setUserDetailsService(customUserDetailsService);
         daoAuthenticationProvider.setPasswordEncoder(baseConfig.passwordEncoder());
         return daoAuthenticationProvider;
+    }
+
+//    여기부터 하면됨
+    @Bean
+    public JsonAuthenticationFilter jsonAuthenticationFilter() {
+        JsonAuthenticationFilter jsonFilter = new JsonAuthenticationFilter(new ObjectMapper());
+        jsonFilter.setAuthenticationManager(authenticationManager());
+        jsonFilter.setAuthenticationSuccessHandler(customAuthenticationSuccessHandler);
+        jsonFilter.setAuthenticationFailureHandler(customAuthenticationFailureHandler);
+        return jsonFilter;
     }
 
     //    시큐리티 인증
