@@ -64,7 +64,7 @@ public class OrderManagementService {
     @Transactional
     public OrderManagement createOrder(OrderManagementDto orderManagementDto) {
 
-        if (operatePauseService.isSalesPaused()) {
+        if (!operatePauseService.isSalesPaused()) {
             throw new IllegalStateException("현재 영업이 일시 정지 상태입니다. 주문을 생성할 수 없습니다.");
         }
 
@@ -124,7 +124,7 @@ public class OrderManagementService {
     public void updateOrderStatus(OrderUpdateRequest request) {
         if (request == null) return;
 
-        if (operatePauseService.isSalesPaused()) {
+        if (!operatePauseService.isSalesPaused()) {
             throw new IllegalStateException("현재 영업이 일시 정지 상태입니다. 주문을 생성할 수 없습니다.");
         }
 

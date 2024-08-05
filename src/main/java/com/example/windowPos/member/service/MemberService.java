@@ -7,6 +7,8 @@ import com.example.windowPos.redis.service.RedisServiceImpl;
 import com.example.windowPos.setting.entity.Setting;
 import com.example.windowPos.setting.repository.SettingRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -77,5 +79,12 @@ public class MemberService {
 //    Id로 유저 조회
     public Optional<Member> findById(Long id) {
         return this.memberRepository.findById(id);
+    }
+
+//    현재 로그인한 회원을 가져오는 메서드
+    public Member getCurrentMember() {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        return memberRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
     }
 }

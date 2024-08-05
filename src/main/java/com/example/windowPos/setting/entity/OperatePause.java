@@ -28,7 +28,7 @@ public class OperatePause extends BaseEntity {
 
     // 영업 일시 정지 시작 시간
     @JsonFormat(pattern = "HH:mm:ss")
-    private LocalTime salesPauseStartTime = LocalTime.now();
+    private LocalTime salesPauseStartTime = LocalTime.of(0, 0);
 
     public void setSalesPauseStartTime(LocalTime salesPauseStartTime) {
         this.salesPauseStartTime = salesPauseStartTime;
@@ -36,7 +36,7 @@ public class OperatePause extends BaseEntity {
 
     // 영업 일시 정지 종료 시간
     @JsonFormat(pattern = "HH:mm:ss")
-    private LocalTime salesPauseEndTime = LocalTime.of(0, 0);
+    private LocalTime salesPauseEndTime = LocalTime.of(23, 59);
 
     public void setSalesPauseEndTime(LocalTime salesPauseEndTime) {
         this.salesPauseEndTime = salesPauseEndTime;

@@ -164,15 +164,17 @@ public class SettingService {
     private void updateOperatePause(Setting setting, OperatePauseDto operatePauseDto) {
         if (operatePauseDto != null) {
             OperatePause operatePause = setting.getOperatePause();
-            if (operatePauseDto.getSalesPauseStartTime() != null) {
-                operatePause.setSalesPauseStartTime(operatePauseDto.getSalesPauseStartTime());
-            }
-            if (operatePauseDto.getSalesPauseEndTime() != null) {
-                operatePause.setSalesPauseEndTime(operatePauseDto.getSalesPauseEndTime());
-            } else if (operatePauseDto.getDurationMinutes() != null) {
-                LocalTime now = LocalTime.now();
-                LocalTime endTime = now.plus(Duration.ofMinutes(operatePauseDto.getDurationMinutes()));
-                operatePause.setSalesPauseEndTime(endTime);
+            if (operatePause.getOperateStatus() != OperateStatus.START) {
+                if (operatePauseDto.getSalesPauseStartTime() != null) {
+                    operatePause.setSalesPauseStartTime(operatePauseDto.getSalesPauseStartTime());
+                }
+                if (operatePauseDto.getSalesPauseEndTime() != null) {
+                    operatePause.setSalesPauseEndTime(operatePauseDto.getSalesPauseEndTime());
+                } else if (operatePauseDto.getDurationMinutes() != null) {
+                    LocalTime now = LocalTime.now();
+                    LocalTime endTime = now.plus(Duration.ofMinutes(operatePauseDto.getDurationMinutes()));
+                    operatePause.setSalesPauseEndTime(endTime);
+                }
             }
             if (operatePauseDto.getOperateStatus() != null) {
                 operatePause.setOperateStatus(OperateStatus.valueOf(operatePauseDto.getOperateStatus()));

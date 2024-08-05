@@ -1,11 +1,14 @@
 package com.example.windowPos.setting.service;
 
+import com.example.windowPos.member.entity.Member;
+import com.example.windowPos.member.service.MemberService;
 import com.example.windowPos.setting.dto.OperatePauseDto;
 import com.example.windowPos.setting.entity.OperatePause;
 import com.example.windowPos.setting.entity.Setting;
 import com.example.windowPos.setting.repository.OperatePauseRepository;
 import com.example.windowPos.setting.repository.SettingRepository;
 import com.example.windowPos.setting.settingEnum.OperateStatus;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -16,16 +19,21 @@ import java.time.LocalTime;
 @RequiredArgsConstructor
 public class OperatePauseService {
     private final SettingRepository settingRepository;
+    private final MemberService memberService;
     private final OperatePauseRepository operatePauseRepository;
 
     // 현재 시간이 영업 일시 정지 기간 내에 있는지 확인
     public boolean isSalesPaused() {
-        LocalTime now = LocalTime.now();
-        OperatePause operatePause = operatePauseRepository.findCurrentSalesPause(now);
+        Member currentMember = memberService.getCurrentMember();
+        Setting setting = settingRepository.findByMember(currentMember)
+                .orElseThrow(() -> new EntityNotFoundException("Setting not found for current member"));
 
+        OperatePause operatePause = setting.getOperatePause();
         if (operatePause == null || operatePause.getOperateStatus() != OperateStatus.START) {
             return false;
         }
+
+        LocalTime now = LocalTime.now();
         LocalTime startTime = operatePause.getSalesPauseStartTime();
         LocalTime endTime = operatePause.getSalesPauseEndTime();
 
