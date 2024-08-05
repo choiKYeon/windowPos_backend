@@ -88,6 +88,7 @@ public class DtoConverter {
         settingDto.setEstimatedCookingTimeDto(convertToDto(setting.getEstimatedCookingTime()));
         settingDto.setEstimatedArrivalTimeDto(convertToDto(setting.getEstimatedArrivalTime()));
         settingDto.setBreakTimeDto(convertToDto(setting.getBreakTime()));
+        settingDto.setOperateStatus(String.valueOf(setting.getOperateStatus()));
         settingDto.setMemberId(setting.getMember().getId());
         return settingDto;
     }

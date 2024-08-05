@@ -59,6 +59,7 @@ public class SettingService {
         updateEstimatedCookingTime(setting, settingDto.getEstimatedCookingTimeDto());
         updateOperateTime(setting, settingDto.getOperateTimeDto());
         updateOperatePause(setting, settingDto.getOperatePauseDto());
+        setting.setOperateStatus(OperateStatus.valueOf(settingDto.getOperateStatus()));
 
         settingRepository.save(setting);
     }
@@ -164,7 +165,7 @@ public class SettingService {
     private void updateOperatePause(Setting setting, OperatePauseDto operatePauseDto) {
         if (operatePauseDto != null) {
             OperatePause operatePause = setting.getOperatePause();
-            if (operatePause.getOperateStatus() != OperateStatus.START) {
+
                 if (operatePauseDto.getSalesPauseStartTime() != null) {
                     operatePause.setSalesPauseStartTime(operatePauseDto.getSalesPauseStartTime());
                 }
@@ -175,10 +176,6 @@ public class SettingService {
                     LocalTime endTime = now.plus(Duration.ofMinutes(operatePauseDto.getDurationMinutes()));
                     operatePause.setSalesPauseEndTime(endTime);
                 }
-            }
-            if (operatePauseDto.getOperateStatus() != null) {
-                operatePause.setOperateStatus(OperateStatus.valueOf(operatePauseDto.getOperateStatus()));
-            }
             operatePause.setSetting(setting);
         }
     }

@@ -13,9 +13,9 @@ public class ClosedDaysDto {
 
     private Long id;
 
-//    임시 휴무일
+    //    임시 휴무일
     private List<TemporaryHolidayDto> temporaryHolidayDates;
 
-//    정기 휴무일
+    //    정기 휴무일
     private List<RegularHolidayDto> regularHolidayList;
 }

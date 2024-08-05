@@ -18,4 +18,5 @@ public class TemporaryHolidayDto {
 
     //    임시 휴무 종료 날짜
     private LocalDate temporaryHolidayEndDate;
+
 }

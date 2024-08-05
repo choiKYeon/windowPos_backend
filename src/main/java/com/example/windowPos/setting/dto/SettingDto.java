@@ -29,5 +29,8 @@ public class SettingDto {
 //    브레이크 타임
     private BreakTimeDto breakTimeDto;
 
+//    영업 상태
+    private String operateStatus;
+
     private Long memberId;
 }

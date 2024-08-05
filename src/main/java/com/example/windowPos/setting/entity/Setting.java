@@ -2,6 +2,7 @@ package com.example.windowPos.setting.entity;
 
 import com.example.windowPos.global.baseentity.BaseEntity;
 import com.example.windowPos.member.entity.Member;
+import com.example.windowPos.setting.settingEnum.OperateStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -63,11 +64,19 @@ public class Setting extends BaseEntity {
         this.breakTime = breakTime;
     }
 
+    //    영업 상태
+    @Enumerated(EnumType.STRING)
+    private OperateStatus operateStatus = OperateStatus.END;
+
+    public void setOperateStatus(OperateStatus operateStatus) {
+        this.operateStatus = operateStatus;
+    }
+
     @OneToOne
     @JoinColumn(name = "member_id")
     private Member member;
 
-    public void setMember (Member member) {
+    public void setMember(Member member) {
         this.member = member;
     }
 }
