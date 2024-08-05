@@ -24,14 +24,17 @@ public class MemberService {
     private final PasswordEncoder passwordEncoder;
     private final SettingRepository settingRepository;
 
+//    로그인 시 기본 세팅 설정
     @Transactional
     public Setting newMemberLogin(Member member) {
         Setting setting = settingRepository.findByMember(member).orElse(null);
         if (setting == null) {
-            setting.setMember(member);
-            settingRepository.save(setting);
+            setting = new Setting();
         }
-
+        setting.setMember(member);
+        member.setSetting(setting);
+        settingRepository.save(setting);
+        memberRepository.save(member);
         return setting;
     }
 
@@ -39,8 +42,6 @@ public class MemberService {
     public Optional<Member> findByUsername(String username) {
         Member member = memberRepository.findByUsername(username).orElse(null);
         return Optional.ofNullable(member);
-//        return memberRepository.findByUsername(username)
-//                .map(member -> new MemberDto(member.getName(), member.getUsername(), member.getEmail()));
     }
 
     //    유저를 확인하는 구문 (entity값을 반환)

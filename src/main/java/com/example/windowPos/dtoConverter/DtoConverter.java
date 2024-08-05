@@ -41,7 +41,6 @@ public class DtoConverter {
         } else {
             orderManagementDto.setOrderUpdateRequest(null);
         }
-
         return orderManagementDto;
     }
 

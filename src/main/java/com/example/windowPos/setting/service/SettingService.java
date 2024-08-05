@@ -28,6 +28,18 @@ public class SettingService {
     private final MemberRepository memberRepository;
     private final ClosedDaysRepository closedDaysRepository;
 
+
+//    세팅 세부 클래스 기본 설정
+    @Transactional
+    public void newSettingLogin(Setting setting) {
+            setting.getOperatePause().setSetting(setting);
+            setting.getOperateTime().setSetting(setting);
+            setting.getEstimatedCookingTime().setSetting(setting);
+            setting.getEstimatedArrivalTime().setSetting(setting);
+            setting.getClosedDays().setSetting(setting);
+            setting.getBreakTime().setSetting(setting);
+    }
+
     //    유저의 세팅환경 갖고오쇼
     public SettingDto getSettingByMember(Member member) {
         Setting setting = settingRepository.findByMember(member).orElse(null);

@@ -6,18 +6,17 @@ import com.example.windowPos.global.rq.Rq;
 import com.example.windowPos.global.rs.RsData;
 import com.example.windowPos.member.dto.MemberDto;
 import com.example.windowPos.member.entity.Member;
+import com.example.windowPos.member.repository.MemberRepository;
 import com.example.windowPos.member.service.MemberService;
 import com.example.windowPos.redis.service.RedisServiceImpl;
-import jakarta.servlet.http.Cookie;
+import com.example.windowPos.setting.entity.Setting;
+import com.example.windowPos.setting.service.SettingService;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Optional;
 
 import static com.example.windowPos.global.filter.JwtAuthenticationFilter.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -28,6 +27,8 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 public class MemberController {
 
     private final MemberService memberService;
+    private final SettingService settingService;
+    private final MemberRepository memberRepository;
     private final RedisServiceImpl redisServiceImpl;
     private final JwtProvider jwtProvider;
     private final JwtUtill jwtUtill;
@@ -49,6 +50,7 @@ public class MemberController {
     @PostMapping(value = "/login", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<RsData<LoginResponse>> login(@RequestBody MemberDto memberDto, @RequestParam(name = "rememberMe", required = false) boolean rememberMe) throws Exception {
         boolean loginMember = memberService.memberCheck(memberDto.getUsername(), memberDto.getPassword());
+        Member member = memberRepository.findByUsername(memberDto.getUsername()).orElse(null);
 
         if (loginMember) {
             String oldAccessTokenKey = "accessToken :" + memberDto.getUsername();
@@ -75,6 +77,8 @@ public class MemberController {
                 rq.setCrossDomainCookie("rememberMe", "false", -1);
             }
 
+            Setting setting = memberService.newMemberLogin(member);
+            settingService.newSettingLogin(setting);
             LoginResponse loginResponse = new LoginResponse(accessToken, refreshToken);
 
             return ResponseEntity.ok(RsData.of("S-1", "로그인 성공", loginResponse));
