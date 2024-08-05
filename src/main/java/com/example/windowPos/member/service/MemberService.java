@@ -85,6 +85,6 @@ public class MemberService {
     public Member getCurrentMember() {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         return memberRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
+                .orElseThrow(() -> new UsernameNotFoundException("회원 못찾음: " + username));
     }
 }
