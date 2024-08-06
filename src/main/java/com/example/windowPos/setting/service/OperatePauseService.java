@@ -10,17 +10,10 @@ import com.example.windowPos.setting.repository.SettingRepository;
 import com.example.windowPos.setting.settingEnum.OperateStatus;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -36,41 +29,6 @@ public class OperatePauseService {
                 .orElseThrow(() -> new EntityNotFoundException("로그인 계정에서 세팅정보 못찾는당"));
 
         return setting.getOperateStatus();
-    }
-
-    //    시간 주기적으로 체크해서, 설정 시간 지난 경우 상태를 업데이트 하는 구문
-    @Scheduled(fixedRate = 300000) // 5분마다 실행
-    @Transactional
-    public void checkUpdateOperateStatus() {
-        LocalTime now = LocalTime.now();
-
-        int pageSize = 1000;
-        int pageNumber = 0;
-//        데이터를 작은 단위로 나눠서 조회하기 위해 페이징 사용, 최대 1000 사이즈
-        Page<Setting> settings;
-        List<Setting> settingsToUpdate = new ArrayList<>();
-
-        System.out.println("잘 확인중입니다.");
-
-        do {
-            Pageable pageable = PageRequest.of(pageNumber, pageSize);
-            settings = settingRepository.findByOperateStatus(OperateStatus.PAUSE, pageable);
-
-            for (Setting setting : settings) {
-                OperatePause operatePause = setting.getOperatePause();
-                if (operatePause != null && operatePause.getSalesPauseEndTime() != null) {
-                    if (now.isAfter(operatePause.getSalesPauseEndTime())) {
-                        setting.setOperateStatus(OperateStatus.START);
-                        settingsToUpdate.add(setting);
-                    }
-                }
-            }
-            pageNumber++;
-        }  while (settings.hasNext());
-
-        if (!settingsToUpdate.isEmpty()) {
-            settingRepository.saveAll(settingsToUpdate); // 일괄 업데이트
-        }
     }
 
     // 현재 시간이 영업 일시 정지 기간 내에 있는지 확인

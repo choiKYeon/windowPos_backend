@@ -69,6 +69,10 @@ public class SettingService {
     private void updateBreakTime(Setting setting, BreakTimeDto breakTimeDto) {
         if (breakTimeDto != null) {
             BreakTime breakTime = setting.getBreakTime();
+            if (breakTime == null) {
+                breakTime = new BreakTime();
+                setting.setBreakTime(breakTime);
+            }
             if (breakTimeDto.getBreakTimeStart() != null) {
                 breakTime.setBreakTimeStart(breakTimeDto.getBreakTimeStart());
             }
