@@ -110,6 +110,7 @@ public class SettingService {
             if (estimatedArrivalTimeDto.getEstimatedArrivalTimeControl() != null) {
                 estimatedArrivalTime.setEstimatedArrivalTimeControl(estimatedArrivalTimeDto.getEstimatedArrivalTimeControl());
             }
+            if (estimatedArrivalTimeDto.getEstimatedArrivalTimeControl())
             estimatedArrivalTime.setSetting(setting);
         }
     }
