@@ -33,6 +33,7 @@ public class TemporaryHoliday extends BaseEntity {
         this.temporaryHolidayEndDate = temporaryHolidayEndDate;
     }
 
+
     @ManyToOne
     @JoinColumn(name = "closed_days_id")
     @JsonBackReference

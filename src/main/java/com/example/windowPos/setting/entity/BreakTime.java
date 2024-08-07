@@ -32,6 +32,15 @@ public class BreakTime extends BaseEntity {
         this.breakTimeEnd = breakTimeEnd;
     }
 
+//    // 영업 상태
+//    @OneToOne
+//    @JoinColumn(name = "operate_status_id")
+//    private OperateStatusEntity operateStatusEntity;
+//
+//    public void setOperateStatusEntity(OperateStatusEntity operateStatusEntity) {
+//        this.operateStatusEntity = operateStatusEntity;
+//    }
+
     @OneToOne
     @JoinColumn(name = "setting_id")
     private Setting setting;

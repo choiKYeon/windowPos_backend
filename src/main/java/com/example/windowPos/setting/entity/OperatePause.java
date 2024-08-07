@@ -1,9 +1,10 @@
 package com.example.windowPos.setting.entity;
 
 import com.example.windowPos.global.baseentity.BaseEntity;
-import com.example.windowPos.setting.settingEnum.OperateStatus;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,17 +19,9 @@ import java.time.LocalTime;
 @Entity
 public class OperatePause extends BaseEntity {
 
-    //    영업 상태
-    @Enumerated(EnumType.STRING)
-    private OperateStatus operateStatus = OperateStatus.END;
-
-    public void setOperateStatus(OperateStatus operateStatus) {
-        this.operateStatus = operateStatus;
-    }
-
     // 영업 일시 정지 시작 시간
     @JsonFormat(pattern = "HH:mm:ss")
-    private LocalTime salesPauseStartTime = LocalTime.now();
+    private LocalTime salesPauseStartTime = LocalTime.of(0, 0);
 
     public void setSalesPauseStartTime(LocalTime salesPauseStartTime) {
         this.salesPauseStartTime = salesPauseStartTime;
@@ -41,6 +34,15 @@ public class OperatePause extends BaseEntity {
     public void setSalesPauseEndTime(LocalTime salesPauseEndTime) {
         this.salesPauseEndTime = salesPauseEndTime;
     }
+
+//    // 영업 상태
+//    @OneToOne
+//    @JoinColumn(name = "operate_status_id")
+//    private OperateStatusEntity operateStatusEntity;
+//
+//    public void setOperateStatusEntity(OperateStatusEntity operateStatusEntity) {
+//        this.operateStatusEntity = operateStatusEntity;
+//    }
 
     @OneToOne
     @JoinColumn(name = "setting_id")

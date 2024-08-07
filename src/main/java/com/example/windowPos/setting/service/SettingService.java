@@ -28,6 +28,18 @@ public class SettingService {
     private final MemberRepository memberRepository;
     private final ClosedDaysRepository closedDaysRepository;
 
+
+    //    세팅 세부 클래스 기본 설정
+    @Transactional
+    public void newSettingLogin(Setting setting) {
+        setting.getOperatePause().setSetting(setting);
+        setting.getOperateTime().setSetting(setting);
+        setting.getEstimatedCookingTime().setSetting(setting);
+        setting.getEstimatedArrivalTime().setSetting(setting);
+        setting.getClosedDays().setSetting(setting);
+        setting.getBreakTime().setSetting(setting);
+    }
+
     //    유저의 세팅환경 갖고오쇼
     public SettingDto getSettingByMember(Member member) {
         Setting setting = settingRepository.findByMember(member).orElse(null);
@@ -47,6 +59,8 @@ public class SettingService {
         updateEstimatedCookingTime(setting, settingDto.getEstimatedCookingTimeDto());
         updateOperateTime(setting, settingDto.getOperateTimeDto());
         updateOperatePause(setting, settingDto.getOperatePauseDto());
+//        상태 정지 / 종료 시 주문은 들어오지 않지만 잔존해있는 주문은 처리할 수 있음
+        setting.setOperateStatus(OperateStatus.valueOf(settingDto.getOperateStatus()));
 
         settingRepository.save(setting);
     }
@@ -55,6 +69,10 @@ public class SettingService {
     private void updateBreakTime(Setting setting, BreakTimeDto breakTimeDto) {
         if (breakTimeDto != null) {
             BreakTime breakTime = setting.getBreakTime();
+            if (breakTime == null) {
+                breakTime = new BreakTime();
+                setting.setBreakTime(breakTime);
+            }
             if (breakTimeDto.getBreakTimeStart() != null) {
                 breakTime.setBreakTimeStart(breakTimeDto.getBreakTimeStart());
             }
@@ -92,6 +110,7 @@ public class SettingService {
             if (estimatedArrivalTimeDto.getEstimatedArrivalTimeControl() != null) {
                 estimatedArrivalTime.setEstimatedArrivalTimeControl(estimatedArrivalTimeDto.getEstimatedArrivalTimeControl());
             }
+            if (estimatedArrivalTimeDto.getEstimatedArrivalTimeControl())
             estimatedArrivalTime.setSetting(setting);
         }
     }
@@ -152,20 +171,21 @@ public class SettingService {
     private void updateOperatePause(Setting setting, OperatePauseDto operatePauseDto) {
         if (operatePauseDto != null) {
             OperatePause operatePause = setting.getOperatePause();
-            if (operatePauseDto.getSalesPauseStartTime() != null) {
-                operatePause.setSalesPauseStartTime(operatePauseDto.getSalesPauseStartTime());
-            }
+            LocalTime now = LocalTime.now();
+            LocalTime endTime = null;
+//            데이터가 들어오는 순간 시작 시간은 무조건 현재 시간
+            operatePause.setSalesPauseStartTime(LocalTime.now());
+
             if (operatePauseDto.getSalesPauseEndTime() != null) {
                 operatePause.setSalesPauseEndTime(operatePauseDto.getSalesPauseEndTime());
             } else if (operatePauseDto.getDurationMinutes() != null) {
-                LocalTime now = LocalTime.now();
-                LocalTime endTime = now.plus(Duration.ofMinutes(operatePauseDto.getDurationMinutes()));
+                endTime = now.plus(Duration.ofMinutes(operatePauseDto.getDurationMinutes()));
                 operatePause.setSalesPauseEndTime(endTime);
             }
-            if (operatePauseDto.getOperateStatus() != null) {
-                operatePause.setOperateStatus(OperateStatus.valueOf(operatePauseDto.getOperateStatus()));
-            }
+//            임시 중지 데이터가 들어오면 무조곤 임시 중단 상태 처리 (해당 시간까지)
+            setting.setOperateStatus(OperateStatus.PAUSE);
             operatePause.setSetting(setting);
+            settingRepository.save(setting);
         }
     }
 
@@ -207,7 +227,6 @@ public class SettingService {
                 updatedHolidays.add(updatedHoliday);
             }
         }
-
         return updatedHolidays;
     }
 }

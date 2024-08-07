@@ -16,4 +16,5 @@ public class RegularHolidayDto {
 
     //    매 주 언제 정기휴무인지 ex) 첫째 주 / 둘째 주 / 매 주
     private String regularClosedDays;
+
 }

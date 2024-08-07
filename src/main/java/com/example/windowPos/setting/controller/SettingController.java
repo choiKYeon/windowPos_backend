@@ -17,7 +17,7 @@ public class SettingController {
     private final SettingService settingService;
     private final MemberService memberService;
 
-//    세팅 정보 불러오기 (오류터짐 잡아야함)
+//    세팅 정보 불러오기
     @GetMapping(value = "/{id}")
     public ResponseEntity<RsData<SettingDto>> getSetting(@PathVariable("id") Long id) {
 //        현재 로그인한 녀석

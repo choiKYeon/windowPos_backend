@@ -12,6 +12,7 @@ import com.example.windowPos.orderManagement.orderEnum.OrderStatus;
 import com.example.windowPos.orderManagement.orderEnum.OrderType;
 import com.example.windowPos.orderManagement.repository.OrderManagementRepository;
 import com.example.windowPos.setting.service.OperatePauseService;
+import com.example.windowPos.setting.settingEnum.OperateStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -64,7 +65,7 @@ public class OrderManagementService {
     @Transactional
     public OrderManagement createOrder(OrderManagementDto orderManagementDto) {
 
-        if (operatePauseService.isSalesPaused()) {
+        if (operatePauseService.operateStatus() == OperateStatus.END || operatePauseService.operateStatus() == OperateStatus.PAUSE) {
             throw new IllegalStateException("현재 영업이 일시 정지 상태입니다. 주문을 생성할 수 없습니다.");
         }
 
@@ -124,11 +125,11 @@ public class OrderManagementService {
     public void updateOrderStatus(OrderUpdateRequest request) {
         if (request == null) return;
 
-        if (operatePauseService.isSalesPaused()) {
+        if (operatePauseService.operateStatus() == OperateStatus.END || operatePauseService.operateStatus() == OperateStatus.PAUSE) {
             throw new IllegalStateException("현재 영업이 일시 정지 상태입니다. 주문을 생성할 수 없습니다.");
         }
 
-        // 주문id로 주문을 조회
+        // 주문 id로 주문을 조회
         OrderManagement order = orderManagementRepository.findById(request.getId())
                 .orElseThrow(() -> new RuntimeException("주문 못 찾음"));
 

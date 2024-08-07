@@ -14,12 +14,9 @@ public class OperatePauseDto {
 
     private Long id;
 
-    //    영업 상태
-    private String operateStatus;
-
     // 영업 일시 정지 시작 시간
     @JsonFormat(pattern = "HH:mm:ss")
-    private LocalTime salesPauseStartTime = LocalTime.now();
+    private LocalTime salesPauseStartTime;
 
     // 영업 일시 정지 종료 시간
     @JsonFormat(pattern = "HH:mm:ss")

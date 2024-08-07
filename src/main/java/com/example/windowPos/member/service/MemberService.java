@@ -7,6 +7,8 @@ import com.example.windowPos.redis.service.RedisServiceImpl;
 import com.example.windowPos.setting.entity.Setting;
 import com.example.windowPos.setting.repository.SettingRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,14 +26,17 @@ public class MemberService {
     private final PasswordEncoder passwordEncoder;
     private final SettingRepository settingRepository;
 
+//    로그인 시 기본 세팅 설정
     @Transactional
     public Setting newMemberLogin(Member member) {
         Setting setting = settingRepository.findByMember(member).orElse(null);
         if (setting == null) {
-            setting.setMember(member);
-            settingRepository.save(setting);
+            setting = new Setting();
         }
-
+        setting.setMember(member);
+        member.setSetting(setting);
+        settingRepository.save(setting);
+        memberRepository.save(member);
         return setting;
     }
 
@@ -39,8 +44,6 @@ public class MemberService {
     public Optional<Member> findByUsername(String username) {
         Member member = memberRepository.findByUsername(username).orElse(null);
         return Optional.ofNullable(member);
-//        return memberRepository.findByUsername(username)
-//                .map(member -> new MemberDto(member.getName(), member.getUsername(), member.getEmail()));
     }
 
     //    유저를 확인하는 구문 (entity값을 반환)
@@ -76,5 +79,12 @@ public class MemberService {
 //    Id로 유저 조회
     public Optional<Member> findById(Long id) {
         return this.memberRepository.findById(id);
+    }
+
+//    현재 로그인한 회원을 가져오는 메서드
+    public Member getCurrentMember() {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        return memberRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("회원 못찾음: " + username));
     }
 }

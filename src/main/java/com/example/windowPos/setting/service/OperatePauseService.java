@@ -1,11 +1,14 @@
 package com.example.windowPos.setting.service;
 
+import com.example.windowPos.member.entity.Member;
+import com.example.windowPos.member.service.MemberService;
 import com.example.windowPos.setting.dto.OperatePauseDto;
 import com.example.windowPos.setting.entity.OperatePause;
 import com.example.windowPos.setting.entity.Setting;
 import com.example.windowPos.setting.repository.OperatePauseRepository;
 import com.example.windowPos.setting.repository.SettingRepository;
 import com.example.windowPos.setting.settingEnum.OperateStatus;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -16,29 +19,47 @@ import java.time.LocalTime;
 @RequiredArgsConstructor
 public class OperatePauseService {
     private final SettingRepository settingRepository;
+    private final MemberService memberService;
     private final OperatePauseRepository operatePauseRepository;
+
+    //    현재 영업의 상태를 확인하는 구문
+    public OperateStatus operateStatus() {
+        Member currentMember = memberService.getCurrentMember();
+        Setting setting = settingRepository.findByMember(currentMember)
+                .orElseThrow(() -> new EntityNotFoundException("로그인 계정에서 세팅정보 못찾는당"));
+
+        return setting.getOperateStatus();
+    }
 
     // 현재 시간이 영업 일시 정지 기간 내에 있는지 확인
     public boolean isSalesPaused() {
-        LocalTime now = LocalTime.now();
-        OperatePause operatePause = operatePauseRepository.findCurrentSalesPause(now);
+        Member currentMember = memberService.getCurrentMember();
+        Setting setting = settingRepository.findByMember(currentMember)
+                .orElseThrow(() -> new EntityNotFoundException("로그인 계정에서 세팅정보 못찾는당"));
 
-        if (operatePause == null || operatePause.getOperateStatus() != OperateStatus.START) {
+        OperatePause operatePause = setting.getOperatePause();
+        if (operatePause == null) {
             return false;
         }
+
+        LocalTime now = LocalTime.now();
         LocalTime startTime = operatePause.getSalesPauseStartTime();
         LocalTime endTime = operatePause.getSalesPauseEndTime();
 
-        return (startTime != null && now.isAfter(startTime)) && (endTime != null && now.isBefore(endTime));
+        if (startTime != null && endTime != null && now.isAfter(startTime) && now.isBefore(endTime)) {
+            return setting.getOperateStatus() == OperateStatus.PAUSE;
+        }
+
+        return false;
     }
 
-//    영업 임시 중지 구문
-    public void changeOperateStatus(Long id ,OperatePauseDto operatePauseDto) {
+    //    영업 임시 중지 구문
+    public void changeOperateStatus(Long id, OperatePauseDto operatePauseDto) {
         Setting setting = settingRepository.findById(id).orElse(null);
 
         LocalTime now = LocalTime.now();
         LocalTime endTime;
-        
+
         if (operatePauseDto.getSalesPauseEndTime() != null) {
             endTime = operatePauseDto.getSalesPauseEndTime();
         } else if (operatePauseDto.getDurationMinutes() != null) {
@@ -48,7 +69,7 @@ public class OperatePauseService {
         }
 
         OperatePause operatePause = OperatePause.builder()
-                .operateStatus(OperateStatus.PAUSE)
+                .salesPauseStartTime(LocalTime.now())
                 .salesPauseEndTime(endTime)
                 .build();
 
@@ -56,5 +77,6 @@ public class OperatePauseService {
 
         operatePauseRepository.save(operatePause);
         settingRepository.save(setting);
+
     }
 }

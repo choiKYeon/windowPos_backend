@@ -3,6 +3,7 @@ package com.example.windowPos.member.entity;
 import com.example.windowPos.global.baseentity.BaseEntity;
 import com.example.windowPos.setting.entity.Setting;
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
@@ -25,6 +26,7 @@ public class Member extends BaseEntity {
 
     private String name;
 
+    @Column(unique = true)
     private String username;
 
     private String password;
@@ -44,7 +46,7 @@ public class Member extends BaseEntity {
     }
 
     @OneToOne(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Setting setting;
+    private Setting setting = new Setting();
 
     public void setSetting(Setting setting) {
         this.setting = setting;
